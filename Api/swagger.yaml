@@ -18,7 +18,7 @@ tags:
     description: Operations about mirror
   - name: mirrorSubscription
     description: Operations about mirror subscriptions
-  - name: rule
+  - name: rules
     description: Operations about rules
 paths:
   /user:
@@ -275,8 +275,7 @@ paths:
     post:
       tags:
         - mirror
-        - rule
-      operationId: createUserMirror
+      operationId: createMirror
       summary: |
         Creates a new mirror having the `mirrorID` identifier. 
       description: |
@@ -462,6 +461,137 @@ paths:
             
   
     
+  /user/{username}/mirror/{mirrorID}/rules/:
+    parameters:
+      - $ref: '#/components/parameters/usernamePath'
+      - in: path
+        name: mirrorID
+        description: The id the requested mirror
+        required: true
+        schema:
+          $ref: '#/components/schemas/ID'
+    get:
+      tags:
+        - rules
+      operationId: getMirrorRules
+      summary: Get the list of all rules belonging to this mirror
+      description: |
+        The mirror must be public or owned by the current user.
+        
+        ### Failures representation :
+        This api allows the storage of failed rules in the database.
+        TODO : Specify this
+      responses:
+        200:
+          description: Successfully got the rules
+          content:
+            application/json: 
+              schema: 
+                type: array
+                items:
+                  $ref: '#/components/schemas/Rule'
+        404:
+          description: Mirror not found or unauthorized.
+        
+    
+  
+  /user/{username}/mirror/{mirrorID}/rules/{ruleID}:
+    parameters:
+      - $ref: '#/components/parameters/usernamePath'
+      - in: path
+        name: mirrorID
+        description: The id the requested mirror
+        required: true
+        schema:
+          $ref: '#/components/schemas/ID'
+      - in: path
+        name: ruleID
+        description: ID of the requested mirror
+        required: true
+        schema:
+          $ref: '#/components/schemas/ID'
+    get:
+      tags:
+        - rules
+      operationId: getRuleByID
+      summary: Get a rule by ID
+      description: |
+        The mirror must be public or owned by the current user.
+        
+        ### Failures representation :
+        This api allows the storage of failed rules in the database.
+        TODO : Specify this
+      responses:
+        200:
+          description: Successfully got the rule
+          content:
+            application/json: 
+              schema: 
+                $ref: '#/components/schemas/Rule'
+        404:
+          description: Mirror/rule not found or unauthorized.
+  
+    post:
+      tags:
+        - rules
+      operationId: createRule
+      summary: Create a new rule
+      requestBody:
+        content:
+          application/json: 
+            schema:
+              $ref: "#/components/schemas/Rule"
+      responses:
+        200:
+          description: Successfully created rule
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Rule"
+        400:
+          description: | 
+            Invalid rule. //TODO: specify
+        404:
+          description: Mirror not found or unauthorized.
+        409:
+          description: Rule already exists. To update it, use the patch method.
+          
+    patch:
+      tags:
+        - rules
+      summary: Updates a rule.
+      description: |
+        Can be used to edit anything about the rule, even disabling/enabling it by editing the `enabled` field.
+      operationId: updateRule
+      requestBody:  
+        content:
+          application/json:
+            schema: 
+              $ref: "#/components/schemas/Rule"
+      responses:
+        200:
+          description: Successfully updated rule.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Rule"
+        400:
+          description: | 
+            Invalid rule. //TODO: specify
+        404:
+          description: Mirror/rule not found or unauthorized
+    delete:
+      tags:
+        - rules
+      summary: Deletes a rule
+      operationId: deleteRule
+      responses:
+        200:
+          description: Successfully deleted
+        404:
+          description: Mirror/Rule not found or unauthorized.
+            
+            
   /user/{username}/subscription/{subscriptionID}:
     parameters:
         - $ref: '#/components/parameters/usernamePath'
@@ -831,33 +961,33 @@ paths:
   
   
   
-  /rules/{mirrorID}:
-    get:
-      tags:
-        - rule
-      operationId: getMirrorRules
-      summary: Gets the rules of a mirror.
-      description: The mirror must be public or owned by the logged in user.
-      parameters:
-        - in: path
-          name: mirrorID
-          description: Id of the requested mirror
-          required: true
-          schema:
-            type: string
-      responses:
-        '200':
-          description: Operation successfull
-          content:
-            application/json:
-              schema:
-                type: array
-                items:
-                  $ref: '#/components/schemas/Rule'
-        '401':
-          description: Mirror is private and you do not own it.
-        '404':
-          description: Mirror not found
+  # /rules/{mirrorID}:
+  #   get:
+  #     tags:
+  #       - rule
+  #     operationId: getMirrorRules
+  #     summary: Gets the rules of a mirror.
+  #     description: The mirror must be public or owned by the logged in user.
+  #     parameters:
+  #       - in: path
+  #         name: mirrorID
+  #         description: Id of the requested mirror
+  #         required: true
+  #         schema:
+  #           type: string
+  #     responses:
+  #       '200':
+  #         description: Operation successfull
+  #         content:
+  #           application/json:
+  #             schema:
+  #               type: array
+  #               items:
+  #                 $ref: '#/components/schemas/Rule'
+  #       '401':
+  #         description: Mirror is private and you do not own it.
+  #       '404':
+  #         description: Mirror not found
           
           
 externalDocs:
@@ -988,6 +1118,9 @@ components:
       properties:
         type:
           type: string
+        enabled:
+          type: boolean
+        
     Username:
       type: string
       pattern: ^[A-Za-z][A-Za-z0-9_]{4,19}$
