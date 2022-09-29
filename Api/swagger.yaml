@@ -37,9 +37,6 @@ paths:
                 - tokenID
                 - username
               properties:
-                # this has nothing to do in the body. This token must reside in the bearer header
-                # tokenID:
-                #   $ref: '#/components/schemas/TokenID'
                 username:
                   $ref: '#/components/schemas/Username'
         required: true
@@ -960,34 +957,6 @@ paths:
           description: User not found
   
   
-  
-  # /rules/{mirrorID}:
-  #   get:
-  #     tags:
-  #       - rule
-  #     operationId: getMirrorRules
-  #     summary: Gets the rules of a mirror.
-  #     description: The mirror must be public or owned by the logged in user.
-  #     parameters:
-  #       - in: path
-  #         name: mirrorID
-  #         description: Id of the requested mirror
-  #         required: true
-  #         schema:
-  #           type: string
-  #     responses:
-  #       '200':
-  #         description: Operation successfull
-  #         content:
-  #           application/json:
-  #             schema:
-  #               type: array
-  #               items:
-  #                 $ref: '#/components/schemas/Rule'
-  #       '401':
-  #         description: Mirror is private and you do not own it.
-  #       '404':
-  #         description: Mirror not found
           
           
 externalDocs:
@@ -995,21 +964,12 @@ externalDocs:
   url: http://swagger.io
 servers:
   - url: https://virtserver.swaggerhub.com/SuperMuel/kal_api/0.0.1-alpha-oas3
-  # - url: http://virtserver.swaggerhub.com/SuperMuel/kal_api/1.0.0
 components:
   securitySchemes:
-    petstore_auth:
-      type: oauth2
-      flows:
-        implicit:
-          authorizationUrl: http://petstore.swagger.io/oauth/dialog
-          scopes:
-            write:pets: modify pets in your account
-            read:pets: read your pets
-    api_key:
-      type: apiKey
-      name: api_key
-      in: header
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
   schemas:
     ApiResponse:
       type: object
@@ -1029,7 +989,6 @@ components:
           pattern: ^[A-Za-z][A-Za-z0-9_]{4,19}$
       required:
         - username
-        - pattern
     Mirror:
       type: object
       properties:
@@ -1125,11 +1084,7 @@ components:
       type: string
       pattern: ^[A-Za-z][A-Za-z0-9_]{4,19}$
       example: SuperMuel
-    TokenID:
-      type: string
-      example: 1fbf5cf03c97c6fc...
-      description: |
-        tokenID obtained on the client after logging in with firebaseAuth
+
     ID:
       type: string
       description: Id of the entity
@@ -1180,3 +1135,6 @@ components:
       description: Number of entities to skip
       schema:
         type: integer
+        
+security:
+  - bearerAuth: []
