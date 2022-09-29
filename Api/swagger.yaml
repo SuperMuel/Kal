@@ -37,6 +37,9 @@ paths:
                 - tokenID
                 - username
               properties:
+                # this has nothing to do in the body. This token must reside in the bearer header
+                # tokenID:
+                #   $ref: '#/components/schemas/TokenID'
                 username:
                   $ref: '#/components/schemas/Username'
         required: true
@@ -174,7 +177,7 @@ paths:
         '404':
           description: User not found
           
-  /user/{username}/mirror/{mirrorID}:
+  /user/{username}/mirrors/{mirrorID}:
     parameters:
       - $ref: '#/components/parameters/usernamePath'
       - in: path
@@ -232,11 +235,11 @@ paths:
 
         ### The following fields, if specified, *will be ignored*:
           - `public` To change the visibility, instead use `POST /user/{username}/mirror/{mirrorID}/setVisibility?visibility=`
-          - `likes` Instead, to like or unlike a mirror, use `POST /user/{username}/mirror/{mirrorID}/like?true|false`
-          - `subscribersCount`Instead, to subscribe or unsubscribe to this mirror, use POST /user/{username}/mirror/{mirrorID}/setSubscription?true|false
+          - `likes` Instead, to like or unlike a mirror, use `POST /user/{username}/mirrors/{mirrorID}/like?true|false`
+          - `subscribersCount`Instead, to subscribe or unsubscribe to this mirror, use POST /user/{username}/mirrors/{mirrorID}/setSubscription?true|false
           - `creationDateTime`. This attribute doesn't until the deletion of the resource.
           - `lastUpdateDateTime`  The server will update it automatically when processing the request.
-          - `rulesIDs` To edit rules that applies to this mirror, use the `/user/{username}/mirror/{mirrorID}/rule/{ruleID} endpoint`
+          - `rulesIDs` To edit rules that applies to this mirror, use the `/user/{username}/mirrors/{mirrorID}/rules/{ruleID} endpoint`
       requestBody:
         required: true
         content:
@@ -292,7 +295,7 @@ paths:
         - `subscribersCount`: Automatically set to 0
         - `creationDateTime`: automatically set on the server
         - `lastModification`: automatically set on the server
-        - `rulesIDs` To edit rules that applies to this mirror, use the `/user/{username}/mirror/{mirrorID}/rule/{ruleID} endpoint`
+        - `rulesIDs` To edit rules that applies to this mirror, use the `/user/{username}/mirrors/{mirrorID}/rules/{ruleID} endpoint`
         
         
       requestBody:
@@ -362,7 +365,7 @@ paths:
             - Mirror not found (user has no access to it)
   
   
-  /user/{username}/mirror/{mirrorID}/copy:
+  /user/{username}/mirrors/{mirrorID}/copy:
     parameters:
       - $ref: '#/components/parameters/usernamePath'
       - in: path
@@ -401,7 +404,7 @@ paths:
             - User not found
             - mirror not found (also when the authenticated user hasn't access to this mirror)
   
-  /user/{username}/mirror/{mirrorID}/subscribe:
+  /user/{username}/mirrors/{mirrorID}/subscribe:
     parameters:
       - $ref: '#/components/parameters/usernamePath'
       - in: path
@@ -458,7 +461,7 @@ paths:
             
   
     
-  /user/{username}/mirror/{mirrorID}/rules/:
+  /user/{username}/mirrors/{mirrorID}/rules/:
     parameters:
       - $ref: '#/components/parameters/usernamePath'
       - in: path
@@ -492,7 +495,7 @@ paths:
         
     
   
-  /user/{username}/mirror/{mirrorID}/rules/{ruleID}:
+  /user/{username}/mirrors/{mirrorID}/rules/{ruleID}:
     parameters:
       - $ref: '#/components/parameters/usernamePath'
       - in: path
@@ -589,7 +592,7 @@ paths:
           description: Mirror/Rule not found or unauthorized.
             
             
-  /user/{username}/subscription/{subscriptionID}:
+  /user/{username}/subscriptions/{subscriptionID}:
     parameters:
         - $ref: '#/components/parameters/usernamePath'
         - name: subscriptionID
@@ -676,7 +679,7 @@ paths:
         - deletePreviousCalendar : Delete the entire calendar. To use with precaution. 
         - removeSubscriptionEvents : Stops the sync and delete all the previous and future events related to this subscription. Custom events, and events related to a different subscription won't be deleted.
       
-        Should not be used to disable/enable the subscription. Instead, use `/user/{username}/subscription/{subscriptionID}/(dis|en)able:` 
+        Should not be used to disable/enable the subscription. Instead, use `/user/{username}/subscriptions/{subscriptionID}/(dis|en)able:` 
       tags:
         - mirrorSubscription
         
@@ -722,7 +725,7 @@ paths:
             TODO: specify the user locale
             
             
-  /user/{username}/subscription/{subscriptionID}/refresh:
+  /user/{username}/subscriptions/{subscriptionID}/refresh:
     post:
       tags:
         - mirrorSubscription
@@ -759,7 +762,7 @@ paths:
             day, watch an ad or upgrade his/her account.
             
   
-  /user/{username}/subscription/{subscriptionID}/disable:
+  /user/{username}/subscriptions/{subscriptionID}/disable:
     post:
       tags:
         - mirrorSubscription
@@ -814,7 +817,7 @@ paths:
           description: Subscription/user not found or unauthorized
           
 
-  /user/{username}/subscription/{subscriptionID}/enable:
+  /user/{username}/subscriptions/{subscriptionID}/enable:
     post:
       tags:
         - mirrorSubscription
@@ -846,7 +849,7 @@ paths:
           description: >-
             The user can't subscribe to more mirrors. User should upgrade
             his/her account.
-  /checkUsername:
+  /checkUsername/{username}:
     get:
       tags:
         - user
@@ -858,11 +861,7 @@ paths:
         Access is denied for authenticated users for which their username is already set.
       operationId: checkUsername
       parameters:
-        - in: query
-          name: username
-          schema:
-            type: string
-            pattern: ^[A-Za-z][A-Za-z0-9_]{4,19}$
+        - $ref: '#/components/parameters/usernamePath'
       responses:
         '200':
           headers:
@@ -964,6 +963,7 @@ externalDocs:
   url: http://swagger.io
 servers:
   - url: https://virtserver.swaggerhub.com/SuperMuel/kal_api/0.0.1-alpha-oas3
+  # - url: http://virtserver.swaggerhub.com/SuperMuel/kal_api/1.0.0
 components:
   securitySchemes:
     bearerAuth:
