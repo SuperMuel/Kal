@@ -44,11 +44,11 @@ paths:
                   $ref: '#/components/schemas/Username'
         required: true
       responses:
-        '200':
+        201:
           description: Account successfully created.
-        '400':
+        400:
           description: invalid tokenID (invalid-tokenID) or username (invalid-username)
-        '409':
+        409:
           description: >-
             Account already created for this tokenID (account-exists), or
             username already taken (username-taken).
@@ -170,9 +170,9 @@ paths:
         '400':
           description: |
             invalid username, or `limit` > 100
-        '401':
+        '403':
           description: >-
-            Unauthorized. Returned when `username` isn't the authenticated user,
+            Forbidden. Returned when `username` isn't the authenticated user,
             and `visibility` is explicitly set to `private`
         '404':
           description: User not found
@@ -207,13 +207,13 @@ paths:
             - invalid username
             - invalid mirrorID
         '401':
-          description: >-
-            Unauthorized. Returned when the accessed mirror is private and
-            doesn't belong to the authenticated user.
+          description:
+            User unauthenticated or incomplete account
         '404':
           description: >-
             User not found (user-not-found) / Mirror not found
             (mirror-not-found)
+            Also returned when the targeted mirror is private and doesn't belong the the authenticated user.
     patch:
       tags:
         - mirror
@@ -271,7 +271,8 @@ paths:
             - User account is incomplete (incomplete-account)\
             //TODO search for custom error specification
             
-            - the user pointed by the query parameter `username` isn't the authenticated one. 
+        403:
+          description: Forbidden, the authenticated user isn't `username` 
     post:
       tags:
         - mirror
@@ -319,6 +320,8 @@ paths:
                   $ref: "#/components/schemas/groupLeavesArray"
                   
       responses:
+        201:
+          description: Mirror successfully created
         '400':
           description: |
             Returned for one of the following reasons:
@@ -331,6 +334,8 @@ paths:
           description: >-
             Unauthorized. User is not authenticated, or his account is
             incomplete.
+        '403':
+          description: Forbidden, the authenticated user isn't `username`
     delete:
       summary: Deletes the mirror
       description: |
@@ -574,7 +579,7 @@ paths:
             schema:
               $ref: "#/components/schemas/Rule"
       responses:
-        200:
+        201:
           description: Successfully created rule
           content:
             application/json:
@@ -684,7 +689,7 @@ paths:
                 destinationCalendar:
                   $ref: '#/components/schemas/DestinationCalendar'
       responses:
-        200:
+        201:
           description: Successfully subscribed.
         400:
           description: |
@@ -983,13 +988,74 @@ paths:
         '400':
           description: Invalid username supplied
         '401':
-          description: Unauthorized
+          description: Unauthorized. User isn't authenticated.
+        '403':
+          description: Forbidden
         '404':
           description: User not found
   
-  
-          
-          
+  /groupsSources/:
+    get:
+      tags:
+      - groups
+      description: Lists all the groups sources available. No pagination as this list should remain small
+      summary: Lists all the groups sources
+      operationId: getGroupSources
+      responses:
+        200:
+          description: Successful operation
+          content:
+            application/json:
+              schema: 
+                type: array
+                items:
+                  $ref: "#/components/schemas/GroupsSource"
+        401:
+          description: Unauthorized. User should be authenticated
+
+      
+  /groupsSources/{groupSourceID}/groupNode/{groupNodeID}:
+    parameters:
+      - in: path
+        name: groupSourceID
+        schema: 
+          $ref: '#/components/schemas/ID'
+        required: true
+      - in: path
+        name: groupNodeID
+        schema:
+          $ref: '#/components/schemas/ID'
+        required: true
+    get:
+      tags:
+      - groups
+      operationId: getGroupNodeByID
+      description: |
+        Returns the IDs of the childrenNodes(if any), and the groupLeaves objects of this node
+        
+        Only the ids of the children nodes are returned, as the ful recursive data may be huge.
+        
+      responses:
+        200:
+          description: Successfull operation
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  childrenNodesIDs:
+                    type: array
+                    items:
+                      $ref: "#/components/schemas/ID"
+                  groupLeaves:
+                    type: array
+                    items:
+                      $ref: "#/components/schemas/GroupLeaf"
+        401:
+          description: Unauthorized. User should be authenticated
+        404:
+          description: GroupSource/GroupNode not found 
+      
 externalDocs:
   description: Find out more about Swagger
   url: http://swagger.io
@@ -1003,6 +1069,50 @@ components:
       scheme: bearer
       bearerFormat: JWT
   schemas:
+    GroupsSource:
+      type: object
+      required:
+        - id
+        - name
+        - rootNodeID
+      properties:
+        id:
+          $ref: '#/components/schemas/ID'
+        name:
+          type: string
+        rootNodeID:
+          $ref: '#/components/schemas/ID'
+    
+    GroupNode:
+      type: object
+      required:
+        - id
+        - name
+      properties: 
+        id:
+          $ref: '#/components/schemas/ID'
+        name:
+          type: string
+        childrenNodes:
+          type: array
+          items:
+            $ref: '#/components/schemas/ID'
+        groupLeaves:
+          type: array
+          items:
+            $ref: '#/components/schemas/GroupLeaf'
+    
+    GroupLeaf:
+      type: object
+      required:
+        - id
+        - name
+      properties:
+        id:
+          $ref: "#/components/schemas/ID"
+        name:
+          type: string
+      
     ApiResponse:
       type: object
       properties:
@@ -1134,12 +1244,15 @@ components:
       maxLength: 1000
       description: User defined description of this mirror.
       example: L3 Maths-Info schedule without english classes & with custom colors
+    
+    
+    
     groupLeavesArray:
       type: array
       items:
         $ref: "#/components/schemas/ID"
       example:
-        - "843aa4e2-909e-401d-a140-609cfb6dc17d"
+        - "843aa4e2-909e-901d-a140-609cfb6dc17d"
         - "fed44ff2-5801-4faf-85a2-0c1e102d71af"
         
     DestinationCalendar:
@@ -1167,6 +1280,7 @@ components:
       description: Number of entities to skip
       schema:
         type: integer
+    
         
 security:
   - bearerAuth: []
