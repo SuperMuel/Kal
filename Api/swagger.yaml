@@ -363,8 +363,40 @@ paths:
           description: |
             - User not found
             - Mirror not found (user has no access to it)
-  
-  
+            
+
+  /user/{username}/mirrors/{mirrorID}/setVisibility:
+    parameters:
+      - $ref: '#/components/parameters/usernamePath'
+      - in: path
+        name: mirrorID
+        description: The id the requested mirror
+        required: true
+        schema:
+          $ref: '#/components/schemas/ID'
+      - in: query
+        required: true
+        name: visibility
+        schema:
+          type: string
+          enum: [public, private]
+
+    post:
+      tags: [mirror]
+      summary: Makes this mirror public or private
+      responses:
+        200:
+          description: Successfully changed visibility, or the visibility specified was already set.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Mirror"
+        400: 
+          description: Invalid value
+        404:
+          description: Mirror not found or unauthorized
+    
+    
   /user/{username}/mirrors/{mirrorID}/copy:
     parameters:
       - $ref: '#/components/parameters/usernamePath'
