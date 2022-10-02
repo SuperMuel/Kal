@@ -4,11 +4,11 @@ Kal est un outil permettant de transférer un emploi du temps de la fac sur un a
 
 ## Comment ça fonctionne
 
-### Application:
+### 📱 Application:
 
 Kal sera accesstible sur une application android et IOs (aussi sur le web), le tout fait en [Flutter](https://flutter.dev/). Elle permettra à l'utilisateur de configurer ses emplois du temps et agendas. Elle guide l'utilisateur au maximum.
 
-### Backend
+### 📡 Backend
 
 Kal sera constitué d'une [Backend](./Api/), qui fera le lien entre les serveurs de la fac et les serveurs de l'agenda électronique. Elle doit aussi gérer les comptes utilisateurs.
 
@@ -32,11 +32,11 @@ Ce système de Miroir et d'Abonnement sera complètement transparent pour l'util
 
 ---
 
-## Universités supportées
+## 🏫 Universités supportées
 
 La fac des sciences de Montpellier sera la première cible, d'autres pourront venir ensuite.
 
-## Agendas pris en charge
+## 📅 Agendas pris en charge
 
 Les agendas Googles seront les premiers compatibles.
 
