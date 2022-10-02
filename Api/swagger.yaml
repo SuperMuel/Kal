@@ -1211,7 +1211,7 @@ components:
         
     Username:
       type: string
-      pattern: ^[A-Za-z][A-Za-z0-9_]{4,18}[A-Za-z0-9]$
+      pattern: ^[A-Za-z][A-Za-z0-9_]{3,18}[A-Za-z0-9]$
       example: SuperMuel
 
     ID:
