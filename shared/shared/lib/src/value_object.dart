@@ -6,10 +6,10 @@ import 'package:freezed_annotation/freezed_annotation.dart';
 /// Indicates an error of programming, program must exit.
 class UnexpectedFailedValueObjectError extends Error {}
 
-/// Thrown when trying to access the failure of a not-failed [ValueObject]
+/// Thrown when trying to access the failure of a valid [ValueObject]
 ///
 /// Indicates an error of programming, program must exit.
-class UnexpectedGoodValueObjectError extends Error {}
+class UnexpectedValidValueObjectError extends Error {}
 
 @immutable
 abstract class ValueObject<F, V> {
@@ -19,7 +19,7 @@ abstract class ValueObject<F, V> {
       value.fold((_) => throw UnexpectedFailedValueObjectError(), id);
 
   F getFailureOrCrash() =>
-      value.fold(id, (_) => throw UnexpectedGoodValueObjectError());
+      value.fold(id, (_) => throw UnexpectedValidValueObjectError());
 
   bool isValid() => value.isRight();
 
