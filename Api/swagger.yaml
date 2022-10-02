@@ -21,35 +21,7 @@ tags:
   - name: rules
     description: Operations about rules
 paths:
-  /user:
-    post:
-      tags:
-        - user
-      summary: Create user
-      description: User must first authenticate with the oAuth provider to get an tokenID. Accound creation must be finalized by a POST method to this endpoint containing the choosen username for this user.
-      operationId: createUserAccount
-      requestBody:
-        content:
-          application/json:
-            schema:
-              type: object
-              required:
-                - tokenID
-                - username
-              properties:
-                username:
-                  $ref: '#/components/schemas/Username'
-        required: true
-      responses:
-        '200':
-          description: Account successfully created.
-        '400':
-          description: invalid tokenID (invalid-tokenID) or username (invalid-username)
-        '409':
-          description: >-
-            Account already created for this tokenID (account-exists), or
-            username already taken (username-taken).
-  
+
   /mirrors:
     get:
       tags:
@@ -108,7 +80,7 @@ paths:
         Private mirrors of the authenticated user won't be included, but public ones will.
         Mirrors that do not have a owner assigned won't be included.
       responses:
-        '200':
+        200:
           description: Successfull operation
           content:
             application/json:
@@ -116,7 +88,7 @@ paths:
                 type: array
                 items:
                   $ref: '#/components/schemas/Mirror'
-        '400':
+        400:
           description: |
             Returned if :
             - `limit` is > 100 or
@@ -156,7 +128,7 @@ paths:
         - $ref: '#/components/parameters/limit100query'
         - $ref: '#/components/parameters/offsetQuery'
       responses:
-        '200':
+        200:
           description: Mirrors found
           content:
             application/json:
@@ -164,17 +136,17 @@ paths:
                 type: array
                 items:
                   $ref: '#/components/schemas/Mirror'
-        '400':
+        400:
           description: |
             invalid username, or `limit` > 100
-        '401':
+        403:
           description: >-
-            Unauthorized. Returned when `username` isn't the authenticated user,
+            Forbidden. Returned when `username` isn't the authenticated user,
             and `visibility` is explicitly set to `private`
-        '404':
+        404:
           description: User not found
           
-  /user/{username}/mirror/{mirrorID}:
+  /user/{username}/mirrors/{mirrorID}:
     parameters:
       - $ref: '#/components/parameters/usernamePath'
       - in: path
@@ -191,26 +163,26 @@ paths:
         Get a public mirror of another user, of any mirror of the authenticated
         user.
       responses:
-        '200':
+        200:
           description: Mirror found
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/Mirror'
-        '400':
+        400:
           description: |
             Returned if :
             - `limit` is > 100     
             - invalid username
             - invalid mirrorID
-        '401':
-          description: >-
-            Unauthorized. Returned when the accessed mirror is private and
-            doesn't belong to the authenticated user.
-        '404':
+        401:
+          description:
+            User unauthenticated or incomplete account
+        404:
           description: >-
             User not found (user-not-found) / Mirror not found
             (mirror-not-found)
+            Also returned when the targeted mirror is private and doesn't belong the the authenticated user.
     patch:
       tags:
         - mirror
@@ -232,11 +204,11 @@ paths:
 
         ### The following fields, if specified, *will be ignored*:
           - `public` To change the visibility, instead use `POST /user/{username}/mirror/{mirrorID}/setVisibility?visibility=`
-          - `likes` Instead, to like or unlike a mirror, use `POST /user/{username}/mirror/{mirrorID}/like?true|false`
-          - `subscribersCount`Instead, to subscribe or unsubscribe to this mirror, use POST /user/{username}/mirror/{mirrorID}/setSubscription?true|false
+          - `likes` Instead, to like or unlike a mirror, use `POST /user/{username}/mirrors/{mirrorID}/like?true|false`
+          - `subscribersCount`Instead, to subscribe or unsubscribe to this mirror, use POST /user/{username}/mirrors/{mirrorID}/setSubscription?true|false
           - `creationDateTime`. This attribute doesn't until the deletion of the resource.
           - `lastUpdateDateTime`  The server will update it automatically when processing the request.
-          - `rulesIDs` To edit rules that applies to this mirror, use the `/user/{username}/mirror/{mirrorID}/rule/{ruleID} endpoint`
+          - `rulesIDs` To edit rules that applies to this mirror, use the `/user/{username}/mirrors/{mirrorID}/rules/{ruleID} endpoint`
       requestBody:
         required: true
         content:
@@ -252,7 +224,7 @@ paths:
                   $ref: '#/components/schemas/groupLeavesArray'
                 
       responses:
-        '400':
+        400:
           description: |
             Returned for one of the following reasons:
               - the mirror reflects too many group leaves (too-many-group-leaves)
@@ -260,7 +232,7 @@ paths:
               - Invalid title (empty, too long)
               - Invalid description (too long)
 
-        '401':
+        401:
           description: |
             Unauthorized.
             - User is not authenticated
@@ -268,7 +240,8 @@ paths:
             - User account is incomplete (incomplete-account)\
             //TODO search for custom error specification
             
-            - the user pointed by the query parameter `username` isn't the authenticated one. 
+        403:
+          description: Forbidden, the authenticated user isn't `username` 
     post:
       tags:
         - mirror
@@ -292,7 +265,7 @@ paths:
         - `subscribersCount`: Automatically set to 0
         - `creationDateTime`: automatically set on the server
         - `lastModification`: automatically set on the server
-        - `rulesIDs` To edit rules that applies to this mirror, use the `/user/{username}/mirror/{mirrorID}/rule/{ruleID} endpoint`
+        - `rulesIDs` To edit rules that applies to this mirror, use the `/user/{username}/mirrors/{mirrorID}/rules/{ruleID} endpoint`
         
         
       requestBody:
@@ -316,18 +289,22 @@ paths:
                   $ref: "#/components/schemas/groupLeavesArray"
                   
       responses:
-        '400':
+        201:
+          description: Mirror successfully created
+        400:
           description: |
             Returned for one of the following reasons:
               - the mirror reflects too many group leaves (too-many-group-leaves)
               - the path id doesn't match the id given in the body parameters 
-        '409':
+        409:
           description: |
             - ID conflict
-        '401':
+        401:
           description: >-
             Unauthorized. User is not authenticated, or his account is
             incomplete.
+        403:
+          description: Forbidden, the authenticated user isn't `username`
     delete:
       summary: Deletes the mirror
       description: |
@@ -350,19 +327,51 @@ paths:
       tags:
         - mirror 
       responses:
-        '200':
+        200:
           description: Mirror successfully deleted
-        '400':
+        400:
           description: |
             - Invalid username
             - Invalid mirrorID
-        '404':
+        404:
           description: |
             - User not found
             - Mirror not found (user has no access to it)
-  
-  
-  /user/{username}/mirror/{mirrorID}/copy:
+            
+
+  /user/{username}/mirrors/{mirrorID}/setVisibility:
+    parameters:
+      - $ref: '#/components/parameters/usernamePath'
+      - in: path
+        name: mirrorID
+        description: The id the requested mirror
+        required: true
+        schema:
+          $ref: '#/components/schemas/ID'
+      - in: query
+        required: true
+        name: visibility
+        schema:
+          type: string
+          enum: [public, private]
+
+    patch:
+      tags: [mirror]
+      summary: Makes this mirror public or private
+      responses:
+        200:
+          description: Successfully changed visibility, or the visibility specified was already set.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Mirror"
+        400: 
+          description: Invalid value
+        404:
+          description: Mirror not found or unauthorized
+    
+    
+  /user/{username}/mirrors/{mirrorID}/copy:
     parameters:
       - $ref: '#/components/parameters/usernamePath'
       - in: path
@@ -371,7 +380,7 @@ paths:
         required: true
         schema:
           $ref: "#/components/schemas/ID"
-    post:
+    patch:
       summary: Copy a public mirror to the user's account, or duplicate a private one
       description: | 
         - The user is interested by another published mirror, and wants the same but on his account.
@@ -382,26 +391,26 @@ paths:
         - mirror
       operationId: copyUserMirror
       responses:
-        '200':
+        200:
           description: Mirror successfully copied, returns the newly created mirror.
           content:
             application/json:
               schema: 
                 $ref: "#/components/schemas/Mirror"
-        '400':
+        400:
           description: |
             - Invalid username
             - Invalid mirrorID
-        '401':
+        401:
           description: |
             Unauthorized. User is not authenticated, or his account is
             incomplete.
-        '404':
+        404:
           description: |
             - User not found
             - mirror not found (also when the authenticated user hasn't access to this mirror)
   
-  /user/{username}/mirror/{mirrorID}/subscribe:
+  /user/{username}/mirrors/{mirrorID}/subscribe:
     parameters:
       - $ref: '#/components/parameters/usernamePath'
       - in: path
@@ -458,7 +467,7 @@ paths:
             
   
     
-  /user/{username}/mirror/{mirrorID}/rules/:
+  /user/{username}/mirrors/{mirrorID}/rules/:
     parameters:
       - $ref: '#/components/parameters/usernamePath'
       - in: path
@@ -492,7 +501,7 @@ paths:
         
     
   
-  /user/{username}/mirror/{mirrorID}/rules/{ruleID}:
+  /user/{username}/mirrors/{mirrorID}/rules/{ruleID}:
     parameters:
       - $ref: '#/components/parameters/usernamePath'
       - in: path
@@ -539,7 +548,7 @@ paths:
             schema:
               $ref: "#/components/schemas/Rule"
       responses:
-        200:
+        201:
           description: Successfully created rule
           content:
             application/json:
@@ -589,7 +598,7 @@ paths:
           description: Mirror/Rule not found or unauthorized.
             
             
-  /user/{username}/subscription/{subscriptionID}:
+  /user/{username}/subscriptions/{subscriptionID}:
     parameters:
         - $ref: '#/components/parameters/usernamePath'
         - name: subscriptionID
@@ -605,22 +614,22 @@ paths:
       summary: Get a subscription by id
       
       responses:
-        '200':
+        200:
           description: successful operation
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/MirrorSubscription'
         
-        '400':
+        400:
           description: |
             - invalid username
             - invalid sub ID
             
         # This error would allow an unauthorized user to list the subscriptions of another user by brute force. Returning 'not-found' instead is an additional safety feature
-        # '401':
+        # 401:
         #   description: Unauthorized. The authenticated user isn't 'username'
-        '404':
+        404:
           description: |
             - `username` isn't the authenticated user. 
             - subcription not found (only if username was the authenticated user)
@@ -649,7 +658,7 @@ paths:
                 destinationCalendar:
                   $ref: '#/components/schemas/DestinationCalendar'
       responses:
-        200:
+        201:
           description: Successfully subscribed.
         400:
           description: |
@@ -676,7 +685,7 @@ paths:
         - deletePreviousCalendar : Delete the entire calendar. To use with precaution. 
         - removeSubscriptionEvents : Stops the sync and delete all the previous and future events related to this subscription. Custom events, and events related to a different subscription won't be deleted.
       
-        Should not be used to disable/enable the subscription. Instead, use `/user/{username}/subscription/{subscriptionID}/(dis|en)able:` 
+        Should not be used to disable/enable the subscription. Instead, use `/user/{username}/subscriptions/{subscriptionID}/(dis|en)able:` 
       tags:
         - mirrorSubscription
         
@@ -722,7 +731,7 @@ paths:
             TODO: specify the user locale
             
             
-  /user/{username}/subscription/{subscriptionID}/refresh:
+  /user/{username}/subscriptions/{subscriptionID}/refresh:
     post:
       tags:
         - mirrorSubscription
@@ -737,7 +746,7 @@ paths:
           schema:
             type: string
       responses:
-        '200':
+        200:
           description: Update has succesfully been triggered
           headers:
             X-RateLimit-Limit:
@@ -748,19 +757,19 @@ paths:
               description: Number of updates remaining this day
               schema:
                 type: integer
-        '400':
+        400:
           description: |
             Invalid username/ subscription ID
-        '404':
+        404:
           description: Subscription/user not found or forbidden for the curent user
-        '429':
+        429:
           description: >-
             The user requested too many updates. He/she must wait until the next
             day, watch an ad or upgrade his/her account.
             
   
-  /user/{username}/subscription/{subscriptionID}/disable:
-    post:
+  /user/{username}/subscriptions/{subscriptionID}/disable:
+    patch:
       tags:
         - mirrorSubscription
       operationId: disableSubscription
@@ -799,23 +808,23 @@ paths:
               - deleteFutureSubscriptionEvents
               - deleteAllSubscriptionEvents
       responses:
-        '200':
+        200:
           description: Subscription has successfully been disabled, or was already disabled
           headers:
-            X-Subscriptions-Limit:
+            X-RateLimit-Limit:
               description: Number of active subscriptions at the same time allowed
               schema:
                 type: integer
-            X-Subscriptions-Remaining:
+            X-RateLimit-Remaining:
               description: Number of additional mirrors the user can subscribe to.
               schema:
                 type: integer
-        '404':
+        404:
           description: Subscription/user not found or unauthorized
           
 
-  /user/{username}/subscription/{subscriptionID}/enable:
-    post:
+  /user/{username}/subscriptions/{subscriptionID}/enable:
+    patch:
       tags:
         - mirrorSubscription
       operationId: enableSubscription
@@ -829,24 +838,24 @@ paths:
           schema:
             type: string
       responses:
-        '200':
+        200:
           description: Subscription has successfully been enabled, or was already enabled
           headers:
-            X-Subscriptions-Limit:
+            X-RateLimit-Limit:
               description: Number of active subscriptions at the same time allowed
               schema:
                 type: integer
-            X-Subscriptions-Remaining:
+            X-RateLimit-Remaining:
               description: Number of additional mirrors the user can subscribe to.
               schema:
                 type: integer
-        '404':
+        404:
           description: Subscription/user not found or unauthorized
-        '429':
+        429:
           description: >-
             The user can't subscribe to more mirrors. User should upgrade
             his/her account.
-  /checkUsername:
+  /checkUsername/{username}:
     get:
       tags:
         - user
@@ -858,19 +867,15 @@ paths:
         Access is denied for authenticated users for which their username is already set.
       operationId: checkUsername
       parameters:
-        - in: query
-          name: username
-          schema:
-            type: string
-            pattern: ^[A-Za-z][A-Za-z0-9_]{4,19}$
+        - $ref: '#/components/parameters/usernamePath'
       responses:
-        '200':
+        200:
           headers:
-            X-UsernameChecks-Limit:
+            X-RateLimit-Limit:
               description: Maximum number of requests the authenticated client can execute.
               schema:
                 type: integer
-            X-UsernameChecks-Remaining:
+            X-RateLimit-Remaining:
               description: Number of additional requests the client can execute.
               schema:
                 type: integer
@@ -886,32 +891,32 @@ paths:
                 enum:
                   - available
                   - used
-        '400':
+        400:
           headers:
-            X-UsernameChecks-Limit:
+            X-RateLimit-Limit:
               description: Maximum number of requests the authenticated client can execute.
               schema:
                 type: integer
-            X-UsernameChecks-Remaining:
+            X-RateLimit-Remaining:
               description: Number of additional requests the client can execute.
               schema:
                 type: integer
           description: >
             Invalid username provided. TODO: create custom error names for the
             different kinds of invalid username
-        '401':
+        401:
           description: User must be authenticated to use this endpoint (tokenID-requied)
-        '403':
+        403:
           description: >-
             Username already configured, this endpoint is useless for the user.
             (forbidden)
-        '429':
+        429:
           headers:
-            X-UsernameChecks-Limit:
+            X-RateLimit-Limit:
               description: Maximum number of requests the authenticated client can execute.
               schema:
                 type: integer
-            X-UsernameChecks-Remaining:
+            X-RateLimit-Remaining:
               description: Number of additional requests the client can execute.
               schema:
                 type: integer
@@ -928,16 +933,34 @@ paths:
       summary: Get user by user name
       operationId: getUserByName
       responses:
-        '200':
+        200:
           description: successful operation
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/User'
-        '400':
+        400:
           description: Invalid username supplied
-        '404':
+        404:
           description: User not found
+          
+    post:
+      tags:
+        - user
+      summary: Create user
+      description: User must first authenticate with the oAuth provider to get an tokenID. Accound creation must be finalized by a POST method to this endpoint containing the choosen username for this user.
+      operationId: createUserAccount
+      responses:
+        201:
+          description: Account successfully created.
+        400:
+          description: invalid tokenID (invalid-tokenID) or username (invalid-username)
+        409:
+          description: >-
+            Account already created for this tokenID (account-exists), or
+            username already taken (username-taken).
+  
+  
     delete:
       tags:
         - user
@@ -947,23 +970,85 @@ paths:
       parameters:
         - $ref: '#/components/parameters/usernamePath'
       responses:
-        '200':
+        200:
           description: Operation successfull
-        '400':
+        400:
           description: Invalid username supplied
-        '401':
-          description: Unauthorized
-        '404':
+        401:
+          description: Unauthorized. User isn't authenticated.
+        403:
+          description: Forbidden
+        404:
           description: User not found
   
-  
-          
-          
+  /groupsSources/:
+    get:
+      tags:
+      - groups
+      description: Lists all the groups sources available. No pagination as this list should remain small
+      summary: Lists all the groups sources
+      operationId: getGroupSources
+      responses:
+        200:
+          description: Successful operation
+          content:
+            application/json:
+              schema: 
+                type: array
+                items:
+                  $ref: "#/components/schemas/GroupsSource"
+        401:
+          description: Unauthorized. User should be authenticated
+
+      
+  /groupsSources/{groupSourceID}/groupNode/{groupNodeID}:
+    parameters:
+      - in: path
+        name: groupSourceID
+        schema: 
+          $ref: '#/components/schemas/ID'
+        required: true
+      - in: path
+        name: groupNodeID
+        schema:
+          $ref: '#/components/schemas/ID'
+        required: true
+    get:
+      tags:
+      - groups
+      operationId: getGroupNodeByID
+      description: |
+        Returns the IDs of the childrenNodes(if any), and the groupLeaves objects of this node
+        
+        Only the ids of the children nodes are returned, as the ful recursive data may be huge.
+        
+      responses:
+        200:
+          description: Successfull operation
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  childrenNodesIDs:
+                    type: array
+                    items:
+                      $ref: "#/components/schemas/ID"
+                  groupLeaves:
+                    type: array
+                    items:
+                      $ref: "#/components/schemas/GroupLeaf"
+        401:
+          description: Unauthorized. User should be authenticated
+        404:
+          description: GroupSource/GroupNode not found 
+      
 externalDocs:
   description: Find out more about Swagger
   url: http://swagger.io
 servers:
   - url: https://virtserver.swaggerhub.com/SuperMuel/kal_api/0.0.1-alpha-oas3
+  # - url: http://virtserver.swaggerhub.com/SuperMuel/kal_api/1.0.0
 components:
   securitySchemes:
     bearerAuth:
@@ -971,6 +1056,50 @@ components:
       scheme: bearer
       bearerFormat: JWT
   schemas:
+    GroupsSource:
+      type: object
+      required:
+        - id
+        - name
+        - rootNodeID
+      properties:
+        id:
+          $ref: '#/components/schemas/ID'
+        name:
+          type: string
+        rootNodeID:
+          $ref: '#/components/schemas/ID'
+    
+    GroupNode:
+      type: object
+      required:
+        - id
+        - name
+      properties: 
+        id:
+          $ref: '#/components/schemas/ID'
+        name:
+          type: string
+        childrenNodes:
+          type: array
+          items:
+            $ref: '#/components/schemas/ID'
+        groupLeaves:
+          type: array
+          items:
+            $ref: '#/components/schemas/GroupLeaf'
+    
+    GroupLeaf:
+      type: object
+      required:
+        - id
+        - name
+      properties:
+        id:
+          $ref: "#/components/schemas/ID"
+        name:
+          type: string
+      
     ApiResponse:
       type: object
       properties:
@@ -1082,7 +1211,7 @@ components:
         
     Username:
       type: string
-      pattern: ^[A-Za-z][A-Za-z0-9_]{4,19}$
+      pattern: ^[A-Za-z][A-Za-z0-9_]{3,18}[A-Za-z0-9]$
       example: SuperMuel
 
     ID:
@@ -1102,12 +1231,15 @@ components:
       maxLength: 1000
       description: User defined description of this mirror.
       example: L3 Maths-Info schedule without english classes & with custom colors
+    
+    
+    
     groupLeavesArray:
       type: array
       items:
         $ref: "#/components/schemas/ID"
       example:
-        - "843aa4e2-909e-401d-a140-609cfb6dc17d"
+        - "843aa4e2-909e-901d-a140-609cfb6dc17d"
         - "fed44ff2-5801-4faf-85a2-0c1e102d71af"
         
     DestinationCalendar:
@@ -1135,6 +1267,7 @@ components:
       description: Number of entities to skip
       schema:
         type: integer
+    
         
 security:
   - bearerAuth: []
