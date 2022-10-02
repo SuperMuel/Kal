@@ -6,13 +6,13 @@
 
 This is the backend of the KAL service
 
-The goal is to write everything in Dart. This api uses [Dart Frog](https://dartfrog.vgv.dev), a minimalist backend framework. Firebase Auth will be used for authentication. A [Mysql database](#mysql)
+The goal is to write everything in Dart. This api uses [Dart Frog](https://dartfrog.vgv.dev), a minimalist backend framework. Firebase Auth will be used for authentication. We'll use a [Mysql database](#mysql)
 
 # Api specification
 
 [The Swagger (OpenApi) specification](./swagger.yaml)
 
-## Errors:
+## A list of errors:
 
 ### 400 Bad request :
 
