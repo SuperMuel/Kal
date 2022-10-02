@@ -21,38 +21,7 @@ tags:
   - name: rules
     description: Operations about rules
 paths:
-  /user:
-    post:
-      tags:
-        - user
-      summary: Create user
-      description: User must first authenticate with the oAuth provider to get an tokenID. Accound creation must be finalized by a POST method to this endpoint containing the choosen username for this user.
-      operationId: createUserAccount
-      requestBody:
-        content:
-          application/json:
-            schema:
-              type: object
-              required:
-                - tokenID
-                - username
-              properties:
-                # this has nothing to do in the body. This token must reside in the bearer header
-                # tokenID:
-                #   $ref: '#/components/schemas/TokenID'
-                username:
-                  $ref: '#/components/schemas/Username'
-        required: true
-      responses:
-        201:
-          description: Account successfully created.
-        400:
-          description: invalid tokenID (invalid-tokenID) or username (invalid-username)
-        409:
-          description: >-
-            Account already created for this tokenID (account-exists), or
-            username already taken (username-taken).
-  
+
   /mirrors:
     get:
       tags:
@@ -974,6 +943,24 @@ paths:
           description: Invalid username supplied
         404:
           description: User not found
+          
+    post:
+      tags:
+        - user
+      summary: Create user
+      description: User must first authenticate with the oAuth provider to get an tokenID. Accound creation must be finalized by a POST method to this endpoint containing the choosen username for this user.
+      operationId: createUserAccount
+      responses:
+        201:
+          description: Account successfully created.
+        400:
+          description: invalid tokenID (invalid-tokenID) or username (invalid-username)
+        409:
+          description: >-
+            Account already created for this tokenID (account-exists), or
+            username already taken (username-taken).
+  
+  
     delete:
       tags:
         - user
