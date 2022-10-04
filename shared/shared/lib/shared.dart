@@ -5,4 +5,5 @@ library shared;
 
 export 'src/value_object.dart';
 export 'src/username.dart';
-// TODO: Export any libraries intended for clients of this package.
+export 'src/description.dart';
+export 'src/title50.dart';
