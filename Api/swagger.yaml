@@ -3,7 +3,7 @@ info:
   description: >
     This is the kal API. You can use or download the Kal app at
     https://app.kal.supermuel.fr
-  version: 0.0.1-alpha-oas3
+  version: 0.0.2-alpha-oas3
   title: KAL API
   termsOfService: https://kal.supermuel.fr/terms/
   contact:
@@ -60,8 +60,8 @@ paths:
         - $ref: '#/components/parameters/offsetQuery'
         - in: query
           description: >-
-            Mirrors returned will reflect at least one of the group leaves specified by their id
-          name: groupLeavesIDs
+            Mirrors returned will reflect at least one of the timeSchedule having one of the ids
+          name: sourceTimeSchedulesIDs
           schema:
             type: array
             items:
@@ -197,9 +197,9 @@ paths:
         If `id` is specified in the body, it should match with the one given in the query parameters
         
         
-        If `groupLeavesIDs` isn't specified or is null, this request won't touch the existing groupLeaves.\
+        If `sourceTimeSchedulesIDs` isn't specified or is null, this request won't touch the existing sourceTimeSchedules.
         
-        If specified, the new list will entirely replace the existing list.
+        However, if specified, the new list will entirely replace the existing list.
 
 
         ### The following fields, if specified, *will be ignored*:
@@ -220,14 +220,18 @@ paths:
                   $ref: '#/components/schemas/mirrorTitle'
                 description:
                   $ref: '#/components/schemas/mirrorDescription'
-                groupLeavesIDs:
-                  $ref: '#/components/schemas/groupLeavesArray'
-                
+                sourceTimeSchedulesIDs:
+                  type: array
+                  items:
+                    $ref: "#/components/schemas/ID"
+                  example:
+                    - "843aa4e2-909e-901d-a140-609cfb6dc17d"
+                    - "fed44ff2-5801-4faf-85a2-0c1e102d71af"
       responses:
         400:
           description: |
             Returned for one of the following reasons:
-              - the mirror reflects too many group leaves (too-many-group-leaves)
+              - the mirror reflects too many time schedules (too-many-SourceTimeSchedules)
               - the path id doesn't match the id given in the body parameters 
               - Invalid title (empty, too long)
               - Invalid description (too long)
@@ -285,8 +289,13 @@ paths:
                 public:
                   type: boolean
                   default: false
-                groupLeavesIDs:
-                  $ref: "#/components/schemas/groupLeavesArray"
+                sourceTimeSchedulesIDs:
+                  type: array
+                  items:
+                    $ref: "#/components/schemas/ID"
+                  example:
+                    - "843aa4e2-909e-901d-a140-609cfb6dc17d"
+                    - "fed44ff2-5801-4faf-85a2-0c1e102d71af"
                   
       responses:
         201:
@@ -294,7 +303,7 @@ paths:
         400:
           description: |
             Returned for one of the following reasons:
-              - the mirror reflects too many group leaves (too-many-group-leaves)
+              - the mirror reflects too many time schedules (too-many-SourceTimeSchedules)
               - the path id doesn't match the id given in the body parameters 
         409:
           description: |
@@ -1047,7 +1056,7 @@ externalDocs:
   description: Find out more about Swagger
   url: http://swagger.io
 servers:
-  - url: https://virtserver.swaggerhub.com/SuperMuel/kal_api/0.0.1-alpha-oas3
+  - url: https://virtserver.swaggerhub.com/SuperMuel/kal_api/0.0.2-alpha-oas3
   # - url: http://virtserver.swaggerhub.com/SuperMuel/kal_api/1.0.0
 components:
   securitySchemes:
@@ -1098,6 +1107,19 @@ components:
         id:
           $ref: "#/components/schemas/ID"
         name:
+          type: string
+          
+    SourceTimeSchedule:
+      description: |
+        Represents a source of time schedule :
+        - Url is the url at which the related ICS file can be downloaded
+      type: object
+      required:
+        - id
+      properties:
+        id:
+          $ref: "#/components/schemas/ID"
+        ICSurl:
           type: string
       
     ApiResponse:
@@ -1173,11 +1195,11 @@ components:
           type: array
           items:
             $ref: "#/components/schemas/ID"
-        groupLeavesIDs:
-          description: List of IDs, referencing one or multiple [GroupLeaf] objects that the mirror should reflect.
+        sourceTimeSchedulesIDs:
+          description: List of IDs, referencing one or multiple sourceTimeSchedule representing the time schedules that this mirror is expected to reflect
           type: array
           items:
-            $ref: "#/components/schemas/ID"
+            $ref: "#/components/schemas/SourceTimeSchedule"
         
       required:
         - id
@@ -1211,7 +1233,7 @@ components:
         
     Username:
       type: string
-      pattern: ^[A-Za-z][A-Za-z0-9_]{3,18}[A-Za-z0-9]$
+      pattern: ^[A-Za-z][A-Za-z0-9_]{4,18}[A-Za-z0-9]$
       example: SuperMuel
 
     ID:
@@ -1234,14 +1256,7 @@ components:
     
     
     
-    groupLeavesArray:
-      type: array
-      items:
-        $ref: "#/components/schemas/ID"
-      example:
-        - "843aa4e2-909e-901d-a140-609cfb6dc17d"
-        - "fed44ff2-5801-4faf-85a2-0c1e102d71af"
-        
+  
     DestinationCalendar:
       type: object
       # Failures:
