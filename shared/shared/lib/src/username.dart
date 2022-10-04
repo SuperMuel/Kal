@@ -17,7 +17,7 @@ class Username extends ValueObject<UsernameFailure, String> {
   @override
   final Either<UsernameFailure, String> value;
 
-  Username._(Either<UsernameFailure, String> v) : value = v;
+  const Username._(Either<UsernameFailure, String> v) : value = v;
 
   factory Username(String username) {
     if (username.length < 5) {

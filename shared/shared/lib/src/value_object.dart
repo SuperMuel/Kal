@@ -13,6 +13,8 @@ class UnexpectedValidValueObjectError extends Error {}
 
 @immutable
 abstract class ValueObject<F, V> {
+  const ValueObject();
+
   Either<F, V> get value;
 
   V getValueOrCrash() =>
@@ -24,4 +26,18 @@ abstract class ValueObject<F, V> {
   bool isValid() => value.isRight();
 
   bool isFailure() => value.isLeft();
+
+  @override
+  bool operator ==(Object other) {
+    if (identical(this, other)) return true;
+    return other is ValueObject<F, V> && other.value == value;
+  }
+
+  @override
+  int get hashCode => value.hashCode;
+
+  @override
+  String toString() {
+    return "$runtimeType($value)";
+  }
 }
