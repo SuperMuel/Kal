@@ -20,14 +20,14 @@ class _Failure {
   int get hashCode => value.hashCode;
 }
 
-class _BasicValueObject extends ValueObject<_Failure, String> {
+class _DumbValueObject extends ValueObject<_Failure, String> {
   @override
   final Either<_Failure, String> value;
-  _BasicValueObject(this.value);
+  _DumbValueObject(this.value);
 }
 
-final failedVo = _BasicValueObject(Left(_Failure("failure")));
-final validVo = _BasicValueObject(Right("valid"));
+final failedVo = _DumbValueObject(Left(_Failure("failure")));
+final validVo = _DumbValueObject(Right("valid"));
 void main() {
   group('getValueOrCrash', () {
     test('onFailed should throw', () {
@@ -52,5 +52,22 @@ void main() {
     expect(validVo.isFailure(), false);
     expect(failedVo.isFailure(), true);
     expect(failedVo.isValid(), false);
+  });
+  group("Equality using ==", () {
+    test("returns True on 2 equal value objects ", () {
+      final vo1 = _DumbValueObject(Right("Value"));
+      final vo2 = _DumbValueObject(Right("Value"));
+      expect(vo1 == vo2, true);
+    });
+    test("returns False given a failed and a valid value object", () {
+      final vo1 = _DumbValueObject(Right("Value"));
+      final vo2 = _DumbValueObject(Left(_Failure("Value")));
+      expect(vo1 == vo2, false);
+    });
+    test("returns False given 2 valid value objects of different values", () {
+      final vo1 = _DumbValueObject(Right("AAAAA"));
+      final vo2 = _DumbValueObject(Right("VVVVV"));
+      expect(vo1 == vo2, false);
+    });
   });
 }
