@@ -11,6 +11,6 @@ Even if this project is open-source, there are things that can not be shared. Th
 - `ios/Runner/GoogleService-Info.plist`
 
 To compile your own app and get it working, you'll need to configure your own Firebase project.
-For this, take a look at https://firebase.google.com/docs/flutter/setup?platform=web
+For this, take a look at https://firebase.google.com/docs/flutter/setup
 After creating your Firebase project and installing firebase on your local machine,
 running `flutterfire configure` should create the necessary files.
