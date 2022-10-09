@@ -8,7 +8,10 @@ environment:
 
 dependencies:
   dart_frog: ^0.1.0
-
+  dartz: ^0.10.1
+  jwt_decoder: ^2.0.1
+  shared:
+    path: '../shared/shared'
 dev_dependencies:
   mocktail: ^0.3.0
   test: ^1.19.2
