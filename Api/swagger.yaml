@@ -21,7 +21,24 @@ tags:
   - name: rules
     description: Operations about rules
 paths:
-
+  /myAccount:
+    get:
+      description: Used to recover the user's username from the jwt token
+      tags:
+        - user
+      responses:
+        200:
+          description: Returns the user info 
+          content:
+            application/json: 
+              schema:
+                $ref: "#/components/schemas/User"
+        401:
+          description: Unauthenticated
+        
+      
+    
+    
   /mirrors:
     get:
       tags:
@@ -97,7 +114,7 @@ paths:
             - too many group leaves
             
             
-  /user/{username}/mirrors:
+  /users/{username}/mirrors:
     parameters:
       - $ref: '#/components/parameters/usernamePath'
       - in: query
@@ -146,7 +163,7 @@ paths:
         404:
           description: User not found
           
-  /user/{username}/mirrors/{mirrorID}:
+  /users/{username}/mirrors/{mirrorID}:
     parameters:
       - $ref: '#/components/parameters/usernamePath'
       - in: path
@@ -203,12 +220,12 @@ paths:
 
 
         ### The following fields, if specified, *will be ignored*:
-          - `public` To change the visibility, instead use `POST /user/{username}/mirror/{mirrorID}/setVisibility?visibility=`
-          - `likes` Instead, to like or unlike a mirror, use `POST /user/{username}/mirrors/{mirrorID}/like?true|false`
-          - `subscribersCount`Instead, to subscribe or unsubscribe to this mirror, use POST /user/{username}/mirrors/{mirrorID}/setSubscription?true|false
+          - `public` To change the visibility, instead use `POST /users/{username}/mirror/{mirrorID}/setVisibility?visibility=`
+          - `likes` Instead, to like or unlike a mirror, use `POST /users/{username}/mirrors/{mirrorID}/like?true|false`
+          - `subscribersCount`Instead, to subscribe or unsubscribe to this mirror, use POST /users/{username}/mirrors/{mirrorID}/setSubscription?true|false
           - `creationDateTime`. This attribute doesn't until the deletion of the resource.
           - `lastUpdateDateTime`  The server will update it automatically when processing the request.
-          - `rulesIDs` To edit rules that applies to this mirror, use the `/user/{username}/mirrors/{mirrorID}/rules/{ruleID} endpoint`
+          - `rulesIDs` To edit rules that applies to this mirror, use the `/users/{username}/mirrors/{mirrorID}/rules/{ruleID} endpoint`
       requestBody:
         required: true
         content:
@@ -269,7 +286,7 @@ paths:
         - `subscribersCount`: Automatically set to 0
         - `creationDateTime`: automatically set on the server
         - `lastModification`: automatically set on the server
-        - `rulesIDs` To edit rules that applies to this mirror, use the `/user/{username}/mirrors/{mirrorID}/rules/{ruleID} endpoint`
+        - `rulesIDs` To edit rules that applies to this mirror, use the `/users/{username}/mirrors/{mirrorID}/rules/{ruleID} endpoint`
         
         
       requestBody:
@@ -348,7 +365,7 @@ paths:
             - Mirror not found (user has no access to it)
             
 
-  /user/{username}/mirrors/{mirrorID}/setVisibility:
+  /users/{username}/mirrors/{mirrorID}/setVisibility:
     parameters:
       - $ref: '#/components/parameters/usernamePath'
       - in: path
@@ -380,7 +397,7 @@ paths:
           description: Mirror not found or unauthorized
     
     
-  /user/{username}/mirrors/{mirrorID}/copy:
+  /users/{username}/mirrors/{mirrorID}/copy:
     parameters:
       - $ref: '#/components/parameters/usernamePath'
       - in: path
@@ -419,7 +436,7 @@ paths:
             - User not found
             - mirror not found (also when the authenticated user hasn't access to this mirror)
   
-  /user/{username}/mirrors/{mirrorID}/subscribe:
+  /users/{username}/mirrors/{mirrorID}/subscribe:
     parameters:
       - $ref: '#/components/parameters/usernamePath'
       - in: path
@@ -476,7 +493,7 @@ paths:
             
   
     
-  /user/{username}/mirrors/{mirrorID}/rules/:
+  /users/{username}/mirrors/{mirrorID}/rules/:
     parameters:
       - $ref: '#/components/parameters/usernamePath'
       - in: path
@@ -510,7 +527,7 @@ paths:
         
     
   
-  /user/{username}/mirrors/{mirrorID}/rules/{ruleID}:
+  /users/{username}/mirrors/{mirrorID}/rules/{ruleID}:
     parameters:
       - $ref: '#/components/parameters/usernamePath'
       - in: path
@@ -607,7 +624,7 @@ paths:
           description: Mirror/Rule not found or unauthorized.
             
             
-  /user/{username}/subscriptions/{subscriptionID}:
+  /users/{username}/subscriptions/{subscriptionID}:
     parameters:
         - $ref: '#/components/parameters/usernamePath'
         - name: subscriptionID
@@ -694,7 +711,7 @@ paths:
         - deletePreviousCalendar : Delete the entire calendar. To use with precaution. 
         - removeSubscriptionEvents : Stops the sync and delete all the previous and future events related to this subscription. Custom events, and events related to a different subscription won't be deleted.
       
-        Should not be used to disable/enable the subscription. Instead, use `/user/{username}/subscriptions/{subscriptionID}/(dis|en)able:` 
+        Should not be used to disable/enable the subscription. Instead, use `/users/{username}/subscriptions/{subscriptionID}/(dis|en)able:` 
       tags:
         - mirrorSubscription
         
@@ -740,7 +757,7 @@ paths:
             TODO: specify the user locale
             
             
-  /user/{username}/subscriptions/{subscriptionID}/refresh:
+  /users/{username}/subscriptions/{subscriptionID}/refresh:
     post:
       tags:
         - mirrorSubscription
@@ -777,7 +794,7 @@ paths:
             day, watch an ad or upgrade his/her account.
             
   
-  /user/{username}/subscriptions/{subscriptionID}/disable:
+  /users/{username}/subscriptions/{subscriptionID}/disable:
     patch:
       tags:
         - mirrorSubscription
@@ -832,7 +849,7 @@ paths:
           description: Subscription/user not found or unauthorized
           
 
-  /user/{username}/subscriptions/{subscriptionID}/enable:
+  /users/{username}/subscriptions/{subscriptionID}/enable:
     patch:
       tags:
         - mirrorSubscription
@@ -933,7 +950,7 @@ paths:
             Too many requests. The user is still invited to attempt creating the
             account. (too-many-requests)
             
-  /user/{username}:
+  /users/{username}:
     parameters:
       - $ref: '#/components/parameters/usernamePath'
     get:
