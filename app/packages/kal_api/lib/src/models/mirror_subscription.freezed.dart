@@ -19,6 +19,9 @@ mixin _$MirrorSubscription {
   String get id => throw _privateConstructorUsedError;
   String get mirrorID => throw _privateConstructorUsedError;
   DateTime? get lastRefresh => throw _privateConstructorUsedError;
+  DestinationCalendar? get destinationCalendar =>
+      throw _privateConstructorUsedError;
+  String? get error => throw _privateConstructorUsedError;
 
   @JsonKey(ignore: true)
   $MirrorSubscriptionCopyWith<MirrorSubscription> get copyWith =>
@@ -31,7 +34,14 @@ abstract class $MirrorSubscriptionCopyWith<$Res> {
           MirrorSubscription value, $Res Function(MirrorSubscription) then) =
       _$MirrorSubscriptionCopyWithImpl<$Res, MirrorSubscription>;
   @useResult
-  $Res call({String id, String mirrorID, DateTime? lastRefresh});
+  $Res call(
+      {String id,
+      String mirrorID,
+      DateTime? lastRefresh,
+      DestinationCalendar? destinationCalendar,
+      String? error});
+
+  $DestinationCalendarCopyWith<$Res>? get destinationCalendar;
 }
 
 /// @nodoc
@@ -50,6 +60,8 @@ class _$MirrorSubscriptionCopyWithImpl<$Res, $Val extends MirrorSubscription>
     Object? id = null,
     Object? mirrorID = null,
     Object? lastRefresh = freezed,
+    Object? destinationCalendar = freezed,
+    Object? error = freezed,
   }) {
     return _then(_value.copyWith(
       id: null == id
@@ -64,7 +76,28 @@ class _$MirrorSubscriptionCopyWithImpl<$Res, $Val extends MirrorSubscription>
           ? _value.lastRefresh
           : lastRefresh // ignore: cast_nullable_to_non_nullable
               as DateTime?,
+      destinationCalendar: freezed == destinationCalendar
+          ? _value.destinationCalendar
+          : destinationCalendar // ignore: cast_nullable_to_non_nullable
+              as DestinationCalendar?,
+      error: freezed == error
+          ? _value.error
+          : error // ignore: cast_nullable_to_non_nullable
+              as String?,
     ) as $Val);
+  }
+
+  @override
+  @pragma('vm:prefer-inline')
+  $DestinationCalendarCopyWith<$Res>? get destinationCalendar {
+    if (_value.destinationCalendar == null) {
+      return null;
+    }
+
+    return $DestinationCalendarCopyWith<$Res>(_value.destinationCalendar!,
+        (value) {
+      return _then(_value.copyWith(destinationCalendar: value) as $Val);
+    });
   }
 }
 
@@ -76,7 +109,15 @@ abstract class _$$_MirrorSubscriptionCopyWith<$Res>
       __$$_MirrorSubscriptionCopyWithImpl<$Res>;
   @override
   @useResult
-  $Res call({String id, String mirrorID, DateTime? lastRefresh});
+  $Res call(
+      {String id,
+      String mirrorID,
+      DateTime? lastRefresh,
+      DestinationCalendar? destinationCalendar,
+      String? error});
+
+  @override
+  $DestinationCalendarCopyWith<$Res>? get destinationCalendar;
 }
 
 /// @nodoc
@@ -93,6 +134,8 @@ class __$$_MirrorSubscriptionCopyWithImpl<$Res>
     Object? id = null,
     Object? mirrorID = null,
     Object? lastRefresh = freezed,
+    Object? destinationCalendar = freezed,
+    Object? error = freezed,
   }) {
     return _then(_$_MirrorSubscription(
       id: null == id
@@ -107,6 +150,14 @@ class __$$_MirrorSubscriptionCopyWithImpl<$Res>
           ? _value.lastRefresh
           : lastRefresh // ignore: cast_nullable_to_non_nullable
               as DateTime?,
+      destinationCalendar: freezed == destinationCalendar
+          ? _value.destinationCalendar
+          : destinationCalendar // ignore: cast_nullable_to_non_nullable
+              as DestinationCalendar?,
+      error: freezed == error
+          ? _value.error
+          : error // ignore: cast_nullable_to_non_nullable
+              as String?,
     ));
   }
 }
@@ -115,7 +166,11 @@ class __$$_MirrorSubscriptionCopyWithImpl<$Res>
 
 class _$_MirrorSubscription implements _MirrorSubscription {
   const _$_MirrorSubscription(
-      {required this.id, required this.mirrorID, this.lastRefresh});
+      {required this.id,
+      required this.mirrorID,
+      this.lastRefresh,
+      this.destinationCalendar,
+      this.error});
 
   @override
   final String id;
@@ -123,10 +178,14 @@ class _$_MirrorSubscription implements _MirrorSubscription {
   final String mirrorID;
   @override
   final DateTime? lastRefresh;
+  @override
+  final DestinationCalendar? destinationCalendar;
+  @override
+  final String? error;
 
   @override
   String toString() {
-    return 'MirrorSubscription(id: $id, mirrorID: $mirrorID, lastRefresh: $lastRefresh)';
+    return 'MirrorSubscription(id: $id, mirrorID: $mirrorID, lastRefresh: $lastRefresh, destinationCalendar: $destinationCalendar, error: $error)';
   }
 
   @override
@@ -138,11 +197,15 @@ class _$_MirrorSubscription implements _MirrorSubscription {
             (identical(other.mirrorID, mirrorID) ||
                 other.mirrorID == mirrorID) &&
             (identical(other.lastRefresh, lastRefresh) ||
-                other.lastRefresh == lastRefresh));
+                other.lastRefresh == lastRefresh) &&
+            (identical(other.destinationCalendar, destinationCalendar) ||
+                other.destinationCalendar == destinationCalendar) &&
+            (identical(other.error, error) || other.error == error));
   }
 
   @override
-  int get hashCode => Object.hash(runtimeType, id, mirrorID, lastRefresh);
+  int get hashCode => Object.hash(
+      runtimeType, id, mirrorID, lastRefresh, destinationCalendar, error);
 
   @JsonKey(ignore: true)
   @override
@@ -156,7 +219,9 @@ abstract class _MirrorSubscription implements MirrorSubscription {
   const factory _MirrorSubscription(
       {required final String id,
       required final String mirrorID,
-      final DateTime? lastRefresh}) = _$_MirrorSubscription;
+      final DateTime? lastRefresh,
+      final DestinationCalendar? destinationCalendar,
+      final String? error}) = _$_MirrorSubscription;
 
   @override
   String get id;
@@ -164,6 +229,10 @@ abstract class _MirrorSubscription implements MirrorSubscription {
   String get mirrorID;
   @override
   DateTime? get lastRefresh;
+  @override
+  DestinationCalendar? get destinationCalendar;
+  @override
+  String? get error;
   @override
   @JsonKey(ignore: true)
   _$$_MirrorSubscriptionCopyWith<_$_MirrorSubscription> get copyWith =>
