@@ -1,7 +1,6 @@
 import 'package:dart_frog/dart_frog.dart';
 import 'package:dartz/dartz.dart';
 import 'package:jwt_decoder/jwt_decoder.dart';
-import 'package:shared/shared.dart';
 
 Response onRequest(RequestContext context) {
   final request = context.request;
