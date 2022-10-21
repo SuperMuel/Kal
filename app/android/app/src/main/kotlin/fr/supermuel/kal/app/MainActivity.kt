@@ -1,4 +1,4 @@
-package fr.supermuel.kal_app
+package fr.supermuel.kal.app
 
 import io.flutter.embedding.android.FlutterActivity
 
