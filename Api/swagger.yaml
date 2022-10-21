@@ -3,7 +3,7 @@ info:
   description: >
     This is the kal API. You can use or download the Kal app at
     https://app.kal.supermuel.fr
-  version: 0.0.2-alpha-oas3
+  version: 0.0.3-alpha-oas3
   title: KAL API
   termsOfService: https://kal.supermuel.fr/terms/
   contact:
@@ -1007,47 +1007,39 @@ paths:
         404:
           description: User not found
   
-  /groupsSources/:
+  
+  /scheduleProviders/:
     get:
       tags:
-      - groups
-      description: Lists all the groups sources available. No pagination as this list should remain small
-      summary: Lists all the groups sources
-      operationId: getGroupSources
+        - scheduleProvider
+      description: Returns the list of all entities providing the schedules for their students
+      operationId: getScheduleProviders
       responses:
         200:
-          description: Successful operation
+          description: Successfull operation
           content:
             application/json:
-              schema: 
+              schema:
                 type: array
                 items:
-                  $ref: "#/components/schemas/GroupsSource"
+                  $ref: "#/components/schemas/ScheduleProvider"
         401:
-          description: Unauthorized. User should be authenticated
+          description: Not authenticated. Authentication is required to use this endpoint.
+  
+  
 
-      
-  /groupsSources/{groupSourceID}/groupNode/{groupNodeID}:
+  /scheduleProviders/{scheduleProviderID}:
     parameters:
       - in: path
-        name: groupSourceID
-        schema: 
-          $ref: '#/components/schemas/ID'
         required: true
-      - in: path
-        name: groupNodeID
+        name: scheduleProviderID
         schema:
           $ref: '#/components/schemas/ID'
-        required: true
     get:
       tags:
-      - groups
-      operationId: getGroupNodeByID
-      description: |
-        Returns the IDs of the childrenNodes(if any), and the groupLeaves objects of this node
-        
-        Only the ids of the children nodes are returned, as the ful recursive data may be huge.
-        
+        - scheduleProvider
+      description: Used to traverse the tree of all the schedule providers available.
+      operationId: getScheduleProviderByID
       responses:
         200:
           description: Successfull operation
@@ -1056,24 +1048,27 @@ paths:
               schema:
                 type: object
                 properties:
-                  childrenNodesIDs:
+                  sourceSchedules:
                     type: array
                     items:
-                      $ref: "#/components/schemas/ID"
-                  groupLeaves:
+                      $ref: '#/components/schemas/SourceSchedule'
+                  scheduleProviders:
                     type: array
                     items:
-                      $ref: "#/components/schemas/GroupLeaf"
+                      $ref: '#/components/schemas/ScheduleProvider'
+        400:
+          description: invalid ID
         401:
-          description: Unauthorized. User should be authenticated
-        404:
-          description: GroupSource/GroupNode not found 
+          description: Unauthenticated
+          
+    
+
       
 externalDocs:
   description: Find out more about Swagger
   url: http://swagger.io
 servers:
-  - url: https://virtserver.swaggerhub.com/SuperMuel/kal_api/0.0.2-alpha-oas3
+  - url: https://virtserver.swaggerhub.com/SuperMuel/kal_api/0.0.3-alpha-oas3
   # - url: http://virtserver.swaggerhub.com/SuperMuel/kal_api/1.0.0
 components:
   securitySchemes:
@@ -1082,51 +1077,21 @@ components:
       scheme: bearer
       bearerFormat: JWT
   schemas:
-    GroupsSource:
+    ScheduleProvider:
       type: object
       required:
         - id
-        - name
-        - rootNodeID
+        - title
       properties:
         id:
           $ref: '#/components/schemas/ID'
-        name:
+        title:
           type: string
         rootNodeID:
           $ref: '#/components/schemas/ID'
     
-    GroupNode:
-      type: object
-      required:
-        - id
-        - name
-      properties: 
-        id:
-          $ref: '#/components/schemas/ID'
-        name:
-          type: string
-        childrenNodes:
-          type: array
-          items:
-            $ref: '#/components/schemas/ID'
-        groupLeaves:
-          type: array
-          items:
-            $ref: '#/components/schemas/GroupLeaf'
-    
-    GroupLeaf:
-      type: object
-      required:
-        - id
-        - name
-      properties:
-        id:
-          $ref: "#/components/schemas/ID"
-        name:
-          type: string
-          
-    SourceTimeSchedule:
+  
+    SourceSchedule:
       description: |
         Represents a source of time schedule :
         - Url is the url at which the related ICS file can be downloaded
@@ -1136,9 +1101,11 @@ components:
       properties:
         id:
           $ref: "#/components/schemas/ID"
-        ICSurl:
+        icsUrl: 
           type: string
-      
+        title:
+          type: string
+    
     ApiResponse:
       type: object
       properties:
@@ -1149,6 +1116,8 @@ components:
           type: string
         message:
           type: string
+          
+    
     User:
       type: object
       properties:
@@ -1190,7 +1159,7 @@ components:
         public:
           type: boolean
           description: Whether this mirror is public. Defaults to false
-        likes:
+        likesCount:
           type: integer
           description: Number of likes this mirrror has
           example: 2
@@ -1216,7 +1185,7 @@ components:
           description: List of IDs, referencing one or multiple sourceTimeSchedule representing the time schedules that this mirror is expected to reflect
           type: array
           items:
-            $ref: "#/components/schemas/SourceTimeSchedule"
+            $ref: "#/components/schemas/SourceSchedule"
         
       required:
         - id
@@ -1236,6 +1205,8 @@ components:
           description: null if unknown
         enabled:
           type: boolean
+        destinationCalendar:
+          $ref: "#/components/schemas/ID"
       required:
         - id
         - mirrorID
@@ -1272,10 +1243,15 @@ components:
       example: L3 Maths-Info schedule without english classes & with custom colors
     
     
-    
   
     DestinationCalendar:
       type: object
+      properties:
+        calendarId:
+          $ref: "#/components/schemas/ID"
+        error:
+          type: string
+        
       # Failures:
       #    inexistingCalendar
       #    accessDenied
