@@ -71,7 +71,7 @@ void main() {
       subscribersCount: 10,
     );
 
-    test('Json key names are the same as the parameteres names', () {
+    test('JSON keys', () {
       final json = m.toJson();
 
       final keys = [
@@ -95,7 +95,7 @@ void main() {
       }
     });
 
-    test('Serializing then deserializing gives back the same object', () {
+    test('Serializing then deserializing is endentity', () {
       final json = m.toJson();
 
       expect(m, Mirror.fromJson(json));

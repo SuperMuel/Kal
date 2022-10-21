@@ -9,7 +9,7 @@ part of 'destination_calendar.dart';
 _$_DestinationCalendar _$$_DestinationCalendarFromJson(
         Map<String, dynamic> json) =>
     _$_DestinationCalendar(
-      json['calendarID'] as String,
+      calendarID: json['calendarID'] as String,
     );
 
 Map<String, dynamic> _$$_DestinationCalendarToJson(

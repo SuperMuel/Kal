@@ -86,7 +86,7 @@ class __$$_DestinationCalendarCopyWithImpl<$Res>
     Object? calendarID = null,
   }) {
     return _then(_$_DestinationCalendar(
-      null == calendarID
+      calendarID: null == calendarID
           ? _value.calendarID
           : calendarID // ignore: cast_nullable_to_non_nullable
               as String,
@@ -97,7 +97,7 @@ class __$$_DestinationCalendarCopyWithImpl<$Res>
 /// @nodoc
 @JsonSerializable()
 class _$_DestinationCalendar implements _DestinationCalendar {
-  const _$_DestinationCalendar(this.calendarID);
+  const _$_DestinationCalendar({required this.calendarID});
 
   factory _$_DestinationCalendar.fromJson(Map<String, dynamic> json) =>
       _$$_DestinationCalendarFromJson(json);
@@ -139,7 +139,7 @@ class _$_DestinationCalendar implements _DestinationCalendar {
 }
 
 abstract class _DestinationCalendar implements DestinationCalendar {
-  const factory _DestinationCalendar(final String calendarID) =
+  const factory _DestinationCalendar({required final String calendarID}) =
       _$_DestinationCalendar;
 
   factory _DestinationCalendar.fromJson(Map<String, dynamic> json) =

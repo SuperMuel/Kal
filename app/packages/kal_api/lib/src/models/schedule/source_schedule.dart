@@ -5,7 +5,7 @@ part 'source_schedule.g.dart';
 
 @freezed
 class SourceSchedule with _$SourceSchedule {
-  factory SourceSchedule({
+  const factory SourceSchedule({
     required String id,
     String? title,
     String? icsUrl,

@@ -14,6 +14,10 @@ T _$identity<T>(T value) => value;
 final _privateConstructorUsedError = UnsupportedError(
     'It seems like you constructed your class using `MyClass._()`. This constructor is only meant to be used by freezed and you are not supposed to need it nor use it.\nPlease check the documentation here for more information: https://github.com/rrousselGit/freezed#custom-getters-and-methods');
 
+MirrorSubscription _$MirrorSubscriptionFromJson(Map<String, dynamic> json) {
+  return _MirrorSubscription.fromJson(json);
+}
+
 /// @nodoc
 mixin _$MirrorSubscription {
   String get id => throw _privateConstructorUsedError;
@@ -23,6 +27,7 @@ mixin _$MirrorSubscription {
       throw _privateConstructorUsedError;
   String? get error => throw _privateConstructorUsedError;
 
+  Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
   @JsonKey(ignore: true)
   $MirrorSubscriptionCopyWith<MirrorSubscription> get copyWith =>
       throw _privateConstructorUsedError;
@@ -164,6 +169,7 @@ class __$$_MirrorSubscriptionCopyWithImpl<$Res>
 
 /// @nodoc
 
+@JsonSerializable(explicitToJson: true)
 class _$_MirrorSubscription implements _MirrorSubscription {
   const _$_MirrorSubscription(
       {required this.id,
@@ -171,6 +177,9 @@ class _$_MirrorSubscription implements _MirrorSubscription {
       this.lastRefresh,
       this.destinationCalendar,
       this.error});
+
+  factory _$_MirrorSubscription.fromJson(Map<String, dynamic> json) =>
+      _$$_MirrorSubscriptionFromJson(json);
 
   @override
   final String id;
@@ -203,6 +212,7 @@ class _$_MirrorSubscription implements _MirrorSubscription {
             (identical(other.error, error) || other.error == error));
   }
 
+  @JsonKey(ignore: true)
   @override
   int get hashCode => Object.hash(
       runtimeType, id, mirrorID, lastRefresh, destinationCalendar, error);
@@ -213,6 +223,13 @@ class _$_MirrorSubscription implements _MirrorSubscription {
   _$$_MirrorSubscriptionCopyWith<_$_MirrorSubscription> get copyWith =>
       __$$_MirrorSubscriptionCopyWithImpl<_$_MirrorSubscription>(
           this, _$identity);
+
+  @override
+  Map<String, dynamic> toJson() {
+    return _$$_MirrorSubscriptionToJson(
+      this,
+    );
+  }
 }
 
 abstract class _MirrorSubscription implements MirrorSubscription {
@@ -222,6 +239,9 @@ abstract class _MirrorSubscription implements MirrorSubscription {
       final DateTime? lastRefresh,
       final DestinationCalendar? destinationCalendar,
       final String? error}) = _$_MirrorSubscription;
+
+  factory _MirrorSubscription.fromJson(Map<String, dynamic> json) =
+      _$_MirrorSubscription.fromJson;
 
   @override
   String get id;

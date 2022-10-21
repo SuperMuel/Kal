@@ -119,7 +119,7 @@ class __$$_SourceScheduleCopyWithImpl<$Res>
 /// @nodoc
 @JsonSerializable()
 class _$_SourceSchedule implements _SourceSchedule {
-  _$_SourceSchedule({required this.id, this.title, this.icsUrl});
+  const _$_SourceSchedule({required this.id, this.title, this.icsUrl});
 
   factory _$_SourceSchedule.fromJson(Map<String, dynamic> json) =>
       _$$_SourceScheduleFromJson(json);
@@ -165,7 +165,7 @@ class _$_SourceSchedule implements _SourceSchedule {
 }
 
 abstract class _SourceSchedule implements SourceSchedule {
-  factory _SourceSchedule(
+  const factory _SourceSchedule(
       {required final String id,
       final String? title,
       final String? icsUrl}) = _$_SourceSchedule;

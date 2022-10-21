@@ -11,9 +11,9 @@ part 'destination_calendar.g.dart';
 /// at https://developers.google.com/calendar/api/v3/reference/calendarList
 ///
 class DestinationCalendar with _$DestinationCalendar {
-  const factory DestinationCalendar(
-    String calendarID,
-  ) = _DestinationCalendar;
+  const factory DestinationCalendar({
+    required String calendarID,
+  }) = _DestinationCalendar;
 
   factory DestinationCalendar.fromJson(Map<String, dynamic> json) =>
       _$DestinationCalendarFromJson(json);
