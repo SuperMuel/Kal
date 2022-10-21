@@ -1078,6 +1078,7 @@ components:
       bearerFormat: JWT
   schemas:
     ScheduleProvider:
+      description: A folder, than can point to other folders, each containing some SourceSchedule objetcs.
       type: object
       required:
         - id
@@ -1087,10 +1088,17 @@ components:
           $ref: '#/components/schemas/ID'
         title:
           type: string
-        rootNodeID:
-          $ref: '#/components/schemas/ID'
-    
-  
+          example: L3
+        childrenScheduleProvidersIDs:
+          type: array
+          items:
+            $ref: "#/components/schemas/ID"
+        sourceSchedules:
+          type: array
+          items:
+            $ref: "#/components/schemas/SourceSchedule"
+        
+        
     SourceSchedule:
       description: |
         Represents a source of time schedule :
@@ -1103,8 +1111,10 @@ components:
           $ref: "#/components/schemas/ID"
         icsUrl: 
           type: string
+          example: 'https://student.my-university.com/timeSchedules/ics/id'
         title:
           type: string
+          example: "L3 Maths info semestre 1 "
     
     ApiResponse:
       type: object
