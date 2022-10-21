@@ -1,5 +1,5 @@
 import 'package:freezed_annotation/freezed_annotation.dart';
-import 'package:kal_api/src/models/schedule/source_schedule.dart';
+import 'package:models/src/source_schedule.dart';
 
 part 'schedule_provider.freezed.dart';
 part 'schedule_provider.g.dart';

@@ -1,7 +1,7 @@
 // ignore_for_file: prefer_const_constructors
 
-import 'package:flutter_test/flutter_test.dart';
-import 'package:kal_api/src/models/schedule/source_schedule.dart';
+import 'package:models/src/source_schedule.dart';
+import 'package:test/test.dart';
 
 void main() {
   test('Some fields are nullable', () {

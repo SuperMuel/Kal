@@ -1,5 +1,5 @@
-import 'package:flutter_test/flutter_test.dart';
-import 'package:kal_api/src/models/mirror.dart';
+import 'package:models/src/mirror.dart';
+import 'package:test/test.dart';
 
 void main() {
   test('Value equality', () {

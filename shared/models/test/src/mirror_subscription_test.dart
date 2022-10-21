@@ -1,6 +1,6 @@
-import 'package:flutter_test/flutter_test.dart';
-import 'package:kal_api/src/models/destination_calendar.dart';
-import 'package:kal_api/src/models/mirror_subscription.dart';
+import 'package:models/src/destination_calendar.dart';
+import 'package:models/src/mirror_subscription.dart';
+import 'package:test/test.dart';
 
 void main() {
   test('Some fields are nullable', () {

@@ -1,5 +1,5 @@
-import 'package:flutter_test/flutter_test.dart';
-import 'package:kal_api/src/models/destination_calendar.dart';
+import 'package:models/src/destination_calendar.dart';
+import 'package:test/test.dart';
 
 void main() {
   const dc = DestinationCalendar(calendarID: 'calendarID');

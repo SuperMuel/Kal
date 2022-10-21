@@ -1,6 +1,7 @@
 import 'package:freezed_annotation/freezed_annotation.dart';
 
-import 'package:kal_api/src/models/destination_calendar.dart';
+import 'destination_calendar.dart';
+
 part 'mirror_subscription.freezed.dart';
 part 'mirror_subscription.g.dart';
 
