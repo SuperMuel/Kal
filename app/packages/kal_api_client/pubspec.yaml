@@ -1,0 +1,15 @@
+name: kal_api_client
+description: Dart client for the official Kal api
+publish_to: none
+version: 0.0.1
+
+environment:
+  sdk: '>=2.18.2 <3.0.0'
+
+dev_dependencies:
+  lints: ^2.0.0
+  test: ^1.16.0
+dependencies:
+  http: ^0.13.5
+  models:
+    path: ../../../shared/models
