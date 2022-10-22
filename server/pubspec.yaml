@@ -1,6 +1,6 @@
 name: server
 description: Official server for the Kal service
-version: 0.0.1+1
+version: 0.0.1
 publish_to: none
 
 environment:
@@ -17,10 +17,10 @@ dependencies:
     git:
       url: https://github.com/SuperMuel/Kal
       path: 'shared/models'
-  shared:
+  validated_objects:
     git: 
       url: https://github.com/SuperMuel/Kal
-      path: shared/shared
+      path: shared/validated_objects
 
 dev_dependencies:
   build_runner: ^2.3.2
