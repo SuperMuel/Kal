@@ -1,7 +1,7 @@
 import 'package:dartz/dartz.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 
-import '../shared.dart';
+import '../validated_objects.dart';
 part 'username.freezed.dart';
 
 @freezed

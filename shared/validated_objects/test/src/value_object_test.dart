@@ -1,7 +1,7 @@
 import 'package:dartz/dartz.dart';
 import 'package:test/test.dart';
 
-import 'package:shared/shared.dart';
+import 'package:validated_objects/validated_objects.dart';
 
 class _Failure {
   final String value;

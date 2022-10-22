@@ -1,6 +1,6 @@
 import 'package:dartz_test/dartz_test.dart';
-import 'package:shared/src/description.dart';
 import 'package:test/test.dart' hide Description;
+import 'package:validated_objects/validated_objects.dart';
 
 void main() {
   group('description fails when', () {

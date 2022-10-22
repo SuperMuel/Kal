@@ -1,6 +1,6 @@
 import 'package:dartz_test/dartz_test.dart';
-import 'package:shared/shared.dart';
 import 'package:test/test.dart';
+import 'package:validated_objects/validated_objects.dart';
 
 void main() {
   group('Username creation fails', () {

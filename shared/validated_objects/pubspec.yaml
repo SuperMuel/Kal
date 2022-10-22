@@ -1,12 +1,9 @@
-name: shared
-description: A starting point for Dart libraries or applications.
-version: 1.0.0
-# homepage: https://www.example.com
+name: validated_objects
+description: Common objects, marked as valid or failed at all time. 
+version: 0.0.1
 
 environment:
   sdk: '>=2.18.0 <3.0.0'
-
-# dependencies:
 
 dev_dependencies:
   build_runner: ^2.2.1
