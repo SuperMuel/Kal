@@ -105,8 +105,8 @@ paths:
             enum:
               - asc
               - desc
-        - $ref: '#/components/parameters/limit100query'
-        - $ref: '#/components/parameters/offsetQuery'
+        - $ref: '#/components/parameters/limit'
+        - $ref: '#/components/parameters/offset'
         - in: query
           description: >-
             Mirrors returned will reflect at least one of the timeSchedule having one of the ids
@@ -174,8 +174,8 @@ paths:
         Get a paginated view of the mirrors created by the authenticated user,
         or get all the public mirrors of another user.
       parameters:
-        - $ref: '#/components/parameters/limit100query'
-        - $ref: '#/components/parameters/offsetQuery'
+        - $ref: '#/components/parameters/limit'
+        - $ref: '#/components/parameters/offset'
       responses:
         200:
           description: Mirrors found
@@ -1273,19 +1273,30 @@ components:
       required: true
       schema:
         $ref: '#/components/schemas/Username'
-    limit100query:
+    limit:
       in: query
       name: limit
-      description: Maximum of entities returned. Maximum is 100.
+      description: | 
+        Number of items to return.
+
+        To use with the offset parameter to implement pagination.
+
+        Maximum value is 100.
       schema:
         type: integer
-    offsetQuery:
+        maximum: 100
+        default: 10
+    offset:
       in: query
       name: offset
-      description: Number of entities to skip
+      description: |
+        Index of the first item to return (starting at 0).
+
+        To use with the limit parameter to implement pagination.
       schema:
         type: integer
-    
+        minimum: 0
+        default: 0
         
 security:
   - bearerAuth: []
