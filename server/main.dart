@@ -1,7 +1,7 @@
 import 'dart:io';
 
-import 'package:api/configure_dependencies.dart';
 import 'package:dart_frog/dart_frog.dart';
+import 'package:server/configure_dependencies.dart';
 
 Future<HttpServer> run(Handler handler, InternetAddress ip, int port) {
   configureDependencies();
