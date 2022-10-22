@@ -35,8 +35,40 @@ paths:
                 $ref: "#/components/schemas/User"
         401:
           description: Unauthenticated
-        
-      
+          
+    delete:
+      tags:
+        - user
+      summary: Delete user
+      description: This can only be done by the logged in user.
+      operationId: deleteUser
+      responses:
+        200:
+          description: Operation successfull
+        401:
+          description: Unauthorized. User isn't authenticated.
+
+    post:
+      tags:
+        - user
+      summary: Create user
+      description: User must first authenticate with the oAuth provider to get an tokenID. Accound creation must be finalized by a POST method to this endpoint containing the choosen username for this user.
+      operationId: createUserAccount
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/User'
+      responses:
+        201:
+          description: Account successfully created.
+        400:
+          description: invalid tokenID (invalid-tokenID)
+        409:
+          description: >-
+            Account already created for this tokenID (account-exists), or
+            username already taken (username-taken).
+  
     
     
   /mirrors:
@@ -970,42 +1002,9 @@ paths:
         404:
           description: User not found
           
-    post:
-      tags:
-        - user
-      summary: Create user
-      description: User must first authenticate with the oAuth provider to get an tokenID. Accound creation must be finalized by a POST method to this endpoint containing the choosen username for this user.
-      operationId: createUserAccount
-      responses:
-        201:
-          description: Account successfully created.
-        400:
-          description: invalid tokenID (invalid-tokenID) or username (invalid-username)
-        409:
-          description: >-
-            Account already created for this tokenID (account-exists), or
-            username already taken (username-taken).
+
   
-  
-    delete:
-      tags:
-        - user
-      summary: Delete user
-      description: This can only be done by the logged in user.
-      operationId: deleteUser
-      parameters:
-        - $ref: '#/components/parameters/usernamePath'
-      responses:
-        200:
-          description: Operation successfull
-        400:
-          description: Invalid username supplied
-        401:
-          description: Unauthorized. User isn't authenticated.
-        403:
-          description: Forbidden
-        404:
-          description: User not found
+    
   
   
   /scheduleProviders/:
@@ -1095,7 +1094,7 @@ components:
             $ref: "#/components/schemas/ID"
         sourceSchedules:
           type: array
-          items:
+          items:  
             $ref: "#/components/schemas/SourceSchedule"
         
         
@@ -1134,6 +1133,7 @@ components:
         username:
           type: string
           pattern: ^[A-Za-z][A-Za-z0-9_]{4,19}$
+          example: SuperMuel
       required:
         - username
     Mirror:
