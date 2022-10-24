@@ -3,8 +3,12 @@ import 'package:test/test.dart';
 
 void main() {
   test('username is nullable', () {
-    final user = User(id: 'id');
+    final user = User();
     expect(user.username, isNull);
+  });
+  test('id is nullable', () {
+    final user = User();
+    expect(user.id, isNull);
   });
 
   test('supports value comparison', () {
@@ -24,9 +28,15 @@ void main() {
     });
 
     test('null username is null in json', () {
-      final nullUsernameUser = User(id: 'id');
+      final nullUsernameUser = User();
       final json = nullUsernameUser.toJson();
       expect(json['username'], isNull);
+    });
+
+    test('null id is null in json', () {
+      final nullIdUser = User();
+      final json = nullIdUser.toJson();
+      expect(json['id'], isNull);
     });
 
     test('Serializing then deserializing is identity', () {
