@@ -4,6 +4,11 @@ import 'package:validated_objects/validated_objects.dart';
 
 void main() {
   group('Username creation fails', () {
+    test('Instanciate with null value', () {
+      final username = Username(null);
+      expect(username.isFailure(), true);
+      expect(username.value, isLeftOf(UsernameFailure.tooShort('')));
+    });
     test('username too short', () {
       for (var i = 0; i < 5; i++) {
         String username = "a" * i;

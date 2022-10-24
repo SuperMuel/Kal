@@ -19,7 +19,8 @@ class Username extends ValueObject<UsernameFailure, String> {
 
   const Username._(Either<UsernameFailure, String> v) : value = v;
 
-  factory Username(String username) {
+  factory Username(String? username) {
+    username = username ?? '';
     if (username.length < 5) {
       return Username._(Left(UsernameFailure.tooShort(username)));
     }
