@@ -3,10 +3,14 @@
 /// More dartdocs go here.
 library shared;
 
-export 'src/value_object.dart';
-export 'src/username.dart';
-export 'src/description.dart';
-export 'src/title50.dart';
-export 'src/user.dart';
-export 'src/id.dart';
-export 'src/i_entity.dart';
+export 'src/value_object.dart'
+    show
+        ValueObject,
+        UnexpectedFailedValueObjectError,
+        UnexpectedValidValueObjectError;
+export 'src/username.dart' show Username, UsernameFailure;
+export 'src/description.dart' show Description, DescriptionFailure;
+export 'src/title50.dart' show Title50, Title50Failure;
+export 'src/user.dart' show CompleteUser, IncompleteUser, User;
+export 'src/id.dart' show ID;
+export 'src/i_entity.dart' show IEntity;
