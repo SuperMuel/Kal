@@ -1,9 +1,7 @@
 -- MySQL Workbench Forward Engineering
 
 SET @OLD_UNIQUE_CHECKS=@@UNIQUE_CHECKS, UNIQUE_CHECKS=0;
-
 SET @OLD_FOREIGN_KEY_CHECKS=@@FOREIGN_KEY_CHECKS, FOREIGN_KEY_CHECKS=0;
-
 SET @OLD_SQL_MODE=@@SQL_MODE, SQL_MODE='ONLY_FULL_GROUP_BY,STRICT_TRANS_TABLES,NO_ZERO_IN_DATE,NO_ZERO_DATE,ERROR_FOR_DIVISION_BY_ZERO,NO_ENGINE_SUBSTITUTION';
 
 -- -----------------------------------------------------
@@ -13,118 +11,163 @@ SET @OLD_SQL_MODE=@@SQL_MODE, SQL_MODE='ONLY_FULL_GROUP_BY,STRICT_TRANS_TABLES,N
 -- -----------------------------------------------------
 -- Schema kal
 -- -----------------------------------------------------
-CREATE SCHEMA IF NOT EXISTS `KAL` DEFAULT CHARACTER SET UTF8;
-
-USE `KAL`;
+CREATE SCHEMA IF NOT EXISTS `kal` ;
+USE `kal` ;
 
 -- -----------------------------------------------------
 -- Table `kal`.`users`
 -- -----------------------------------------------------
-CREATE TABLE IF NOT EXISTS `KAL`.`USERS` (
-  `USERNAME` VARCHAR(20) NOT NULL,
-  `UID` VARCHAR(128) NOT NULL COMMENT 'If more than 128 characters, that\'S WEIRD BUT ALWAYS THROW A SERVER EXCEPTION AND ISSUE A WARNING',
+CREATE TABLE IF NOT EXISTS `kal`.`users` (
+  `username` VARCHAR(20) NOT NULL,
+  `uid` VARCHAR(128) NOT NULL COMMENT 'If more than 128 characters, that is weird but always throw a server exception and issue a warning',
   `access_token` VARCHAR(4096) NULL,
   `refresh_token` VARCHAR(4096) NULL,
   `creation_dt` DATETIME NULL,
   PRIMARY KEY (`username`),
-  UNIQUE INDEX `firebase_auth_id_UNIQUE` (`uid` ASC) VISIBLE)
+  UNIQUE INDEX `uid_UNIQUE` (`uid` ASC))
 ENGINE = InnoDB;
+
 
 -- -----------------------------------------------------
 -- Table `kal`.`mirrors`
 -- -----------------------------------------------------
-CREATE TABLE IF NOT EXISTS `KAL`.`MIRRORS` (
-  `ID` VARCHAR(36) NOT NULL,
-  `TITLE` VARCHAR(50) NOT NULL,
-  `DESCRIPTION` TEXT(1000) NULL,
-  `OWNER` VARCHAR(20) NULL,
-  `PUBLIC` TINYINT(1) UNSIGNED NOT NULL DEFAULT 0,
-  `CREATION_DT` DATETIME NOT NULL,
-  `LAST_MODIFICATION_DT` DATETIME NULL,
-  PRIMARY KEY (`ID`),
-  INDEX `OWNER_IDX` (`OWNER` ASC) VISIBLE,
-  CONSTRAINT `MIRRORS_OWNER` FOREIGN KEY (`OWNER`) REFERENCES `KAL`.`USERS` (`USERNAME`) ON DELETE SET NULL ON UPDATE NO ACTION
-) ENGINE = INNODB;
+CREATE TABLE IF NOT EXISTS `kal`.`mirrors` (
+  `id` VARCHAR(36) NOT NULL,
+  `title` VARCHAR(50) NOT NULL,
+  `description` TEXT(1000) NULL,
+  `owner` VARCHAR(20) NULL,
+  `public` TINYINT(1) UNSIGNED NOT NULL DEFAULT 0,
+  `creation_dt` DATETIME NOT NULL,
+  `last_modification_dt` DATETIME NULL,
+  PRIMARY KEY (`id`),
+  INDEX `owner_idx` (`owner` ASC),
+  CONSTRAINT `mirrors_owner`
+    FOREIGN KEY (`owner`)
+    REFERENCES `kal`.`users` (`username`)
+    ON DELETE SET NULL
+    ON UPDATE NO ACTION)
+ENGINE = InnoDB;
+
 
 -- -----------------------------------------------------
 -- Table `kal`.`mirrors_likes`
 -- -----------------------------------------------------
-CREATE TABLE IF NOT EXISTS `KAL`.`MIRRORS_LIKES` (
-  `USER` VARCHAR(20) NOT NULL,
-  `MIRROR` VARCHAR(20) NOT NULL,
-  PRIMARY KEY (`USER`, `MIRROR`),
-  INDEX `MIRROR_IDX` (`MIRROR` ASC) VISIBLE,
-  CONSTRAINT `MIRRORS_LIKES_USER` FOREIGN KEY (`USER`) REFERENCES `KAL`.`USERS` (`USERNAME`) ON DELETE NO ACTION ON UPDATE NO ACTION,
-  CONSTRAINT `MIRRORS_LIKES_MIRROR` FOREIGN KEY (`MIRROR`) REFERENCES `KAL`.`MIRRORS` (`ID`) ON DELETE NO ACTION ON UPDATE NO ACTION
-) ENGINE = INNODB;
+CREATE TABLE IF NOT EXISTS `kal`.`mirrors_likes` (
+  `user` VARCHAR(20) NOT NULL,
+  `mirror` VARCHAR(20) NOT NULL,
+  PRIMARY KEY (`user`, `mirror`),
+  INDEX `mirror_idx` (`mirror` ASC),
+  CONSTRAINT `mirrors_likes_user`
+    FOREIGN KEY (`user`)
+    REFERENCES `kal`.`users` (`username`)
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION,
+  CONSTRAINT `mirrors_likes_mirror`
+    FOREIGN KEY (`mirror`)
+    REFERENCES `kal`.`mirrors` (`id`)
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION)
+ENGINE = InnoDB;
+
 
 -- -----------------------------------------------------
 -- Table `kal`.`mirror_subscriptions`
 -- -----------------------------------------------------
-CREATE TABLE IF NOT EXISTS `KAL`.`MIRROR_SUBSCRIPTIONS` (
-  `ID` VARCHAR(36) NOT NULL,
-  `USER` VARCHAR(20) NOT NULL,
-  `MIRROR` VARCHAR(36) NOT NULL,
-  `ENABLED` TINYINT(1) NOT NULL,
-  `LAST_REFRESH_DT` DATETIME NULL,
-  PRIMARY KEY (`ID`),
-  INDEX `USER_IDX` (`USER` ASC) VISIBLE,
-  INDEX `MIRROR_IDX` (`MIRROR` ASC) VISIBLE,
-  CONSTRAINT `MIRROR_SUBSCRIPTION_USER` FOREIGN KEY (`USER`) REFERENCES `KAL`.`USERS` (`USERNAME`) ON DELETE CASCADE ON UPDATE NO ACTION,
-  CONSTRAINT `MIRROR_SUBSCRIPTION_MIRROR` FOREIGN KEY (`MIRROR`) REFERENCES `KAL`.`MIRRORS` (`ID`) ON DELETE CASCADE ON UPDATE NO ACTION
-) ENGINE = INNODB;
+CREATE TABLE IF NOT EXISTS `kal`.`mirror_subscriptions` (
+  `id` VARCHAR(36) NOT NULL,
+  `user` VARCHAR(20) NOT NULL,
+  `mirror` VARCHAR(36) NOT NULL,
+  `enabled` TINYINT(1) NOT NULL,
+  `last_refresh_dt` DATETIME NULL,
+  PRIMARY KEY (`id`),
+  INDEX `user_idx` (`user` ASC),
+  INDEX `mirror_idx` (`mirror` ASC),
+  CONSTRAINT `mirror_subscription_user`
+    FOREIGN KEY (`user`)
+    REFERENCES `kal`.`users` (`username`)
+    ON DELETE CASCADE
+    ON UPDATE NO ACTION,
+  CONSTRAINT `mirror_subscription_mirror`
+    FOREIGN KEY (`mirror`)
+    REFERENCES `kal`.`mirrors` (`id`)
+    ON DELETE CASCADE
+    ON UPDATE NO ACTION)
+ENGINE = InnoDB;
+
 
 -- -----------------------------------------------------
 -- Table `kal`.`mirror_rules`
 -- -----------------------------------------------------
-CREATE TABLE IF NOT EXISTS `KAL`.`MIRROR_RULES` (
-  `ID` VARCHAR(36) NOT NULL,
-  `MIRROR` VARCHAR(36) NOT NULL,
-  `RULE_JSON` LONGTEXT NOT NULL,
-  PRIMARY KEY (`ID`),
-  CONSTRAINT `MIRROR_RULES_MIRROR` FOREIGN KEY (`MIRROR`) REFERENCES `KAL`.`MIRRORS` (`ID`) ON DELETE CASCADE ON UPDATE NO ACTION
-) ENGINE = INNODB;
+CREATE TABLE IF NOT EXISTS `kal`.`mirror_rules` (
+  `id` VARCHAR(36) NOT NULL,
+  `mirror` VARCHAR(36) NOT NULL,
+  `rule_json` LONGTEXT NOT NULL,
+  PRIMARY KEY (`id`),
+  CONSTRAINT `mirror_rules_mirror`
+    FOREIGN KEY (`mirror`)
+    REFERENCES `kal`.`mirrors` (`id`)
+    ON DELETE CASCADE
+    ON UPDATE NO ACTION)
+ENGINE = InnoDB;
+
 
 -- -----------------------------------------------------
 -- Table `kal`.`schedule_provider`
 -- -----------------------------------------------------
-CREATE TABLE IF NOT EXISTS `KAL`.`SCHEDULE_PROVIDER` (
-  `ID` VARCHAR(36) NOT NULL,
-  `TITLE` VARCHAR(128) NOT NULL,
-  `PARENT_SCHEDULE_PROVIDER` VARCHAR(36) NULL,
-  PRIMARY KEY (`ID`),
-  INDEX `SCHEDULE_PROVIDER_PARENT_IDX` (`PARENT_SCHEDULE_PROVIDER` ASC) VISIBLE,
-  CONSTRAINT `SCHEDULE_PROVIDER_PARENT` FOREIGN KEY (`PARENT_SCHEDULE_PROVIDER`) REFERENCES `KAL`.`SCHEDULE_PROVIDER` (`ID`) ON DELETE CASCADE ON UPDATE NO ACTION
-) ENGINE = INNODB;
+CREATE TABLE IF NOT EXISTS `kal`.`schedule_provider` (
+  `id` VARCHAR(36) NOT NULL,
+  `title` VARCHAR(128) NOT NULL,
+  `parent_schedule_provider` VARCHAR(36) NULL,
+  PRIMARY KEY (`id`),
+  INDEX `schedule_provider_parent_idx` (`parent_schedule_provider` ASC),
+  CONSTRAINT `schedule_provider_parent`
+    FOREIGN KEY (`parent_schedule_provider`)
+    REFERENCES `kal`.`schedule_provider` (`id`)
+    ON DELETE CASCADE
+    ON UPDATE NO ACTION)
+ENGINE = InnoDB;
+
 
 -- -----------------------------------------------------
 -- Table `kal`.`source_schedule`
 -- -----------------------------------------------------
-CREATE TABLE IF NOT EXISTS `KAL`.`SOURCE_SCHEDULE` (
-  `ID` VARCHAR(36) NOT NULL,
-  `TITLE` VARCHAR(128) NOT NULL,
-  `ICSURL` VARCHAR(2048) NULL,
-  `PARENT_SCHEDULE_PROVIDER` VARCHAR(36) NOT NULL,
-  `CREATION_DT` DATETIME NULL,
-  PRIMARY KEY (`ID`),
-  INDEX `SOURCE_SCHEDULE_PARENT_IDX` (`PARENT_SCHEDULE_PROVIDER` ASC) VISIBLE,
-  CONSTRAINT `SOURCE_SCHEDULE_PARENT` FOREIGN KEY (`PARENT_SCHEDULE_PROVIDER`) REFERENCES `KAL`.`SCHEDULE_PROVIDER` (`ID`) ON DELETE CASCADE ON UPDATE NO ACTION
-) ENGINE = INNODB;
+CREATE TABLE IF NOT EXISTS `kal`.`source_schedule` (
+  `id` VARCHAR(36) NOT NULL,
+  `title` VARCHAR(128) NOT NULL,
+  `icsUrl` VARCHAR(2048) NULL,
+  `parent_schedule_provider` VARCHAR(36) NOT NULL,
+  `creation_dt` DATETIME NULL,
+  PRIMARY KEY (`id`),
+  INDEX `source_schedule_parent_idx` (`parent_schedule_provider` ASC),
+  CONSTRAINT `source_schedule_parent`
+    FOREIGN KEY (`parent_schedule_provider`)
+    REFERENCES `kal`.`schedule_provider` (`id`)
+    ON DELETE CASCADE
+    ON UPDATE NO ACTION)
+ENGINE = InnoDB;
+
 
 -- -----------------------------------------------------
 -- Table `kal`.`mirror_source_schedules`
 -- -----------------------------------------------------
-CREATE TABLE IF NOT EXISTS `KAL`.`MIRROR_SOURCE_SCHEDULES` (
-  `MIRROR` VARCHAR(36) NOT NULL,
-  `SOURCE_SCHEDULE` VARCHAR(36) NOT NULL,
-  PRIMARY KEY (`MIRROR`, `SOURCE_SCHEDULE`),
-  INDEX `MIRROR_SOURCE_SCHEDULES_MIRROR_SOURCE_SCHEDULE_IDX` (`SOURCE_SCHEDULE` ASC) VISIBLE,
-  CONSTRAINT `MIRROR_SOURCE_SCHEDULES_MIRROR` FOREIGN KEY (`MIRROR`) REFERENCES `KAL`.`MIRRORS` (`ID`) ON DELETE CASCADE ON UPDATE NO ACTION,
-  CONSTRAINT `MIRROR_SOURCE_SCHEDULES_MIRROR_SOURCE_SCHEDULE` FOREIGN KEY (`SOURCE_SCHEDULE`) REFERENCES `KAL`.`SOURCE_SCHEDULE` (`ID`) ON DELETE NO ACTION ON UPDATE NO ACTION
-) ENGINE = INNODB;
+CREATE TABLE IF NOT EXISTS `kal`.`mirror_source_schedules` (
+  `mirror` VARCHAR(36) NOT NULL,
+  `source_schedule` VARCHAR(36) NOT NULL,
+  PRIMARY KEY (`mirror`, `source_schedule`),
+  INDEX `mirror_source_schedules_mirror_source_schedule_idx` (`source_schedule` ASC),
+  CONSTRAINT `mirror_source_schedules_mirror`
+    FOREIGN KEY (`mirror`)
+    REFERENCES `kal`.`mirrors` (`id`)
+    ON DELETE CASCADE
+    ON UPDATE NO ACTION,
+  CONSTRAINT `mirror_source_schedules_mirror_source_schedule`
+    FOREIGN KEY (`source_schedule`)
+    REFERENCES `kal`.`source_schedule` (`id`)
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION)
+ENGINE = InnoDB;
+
 
 SET SQL_MODE=@OLD_SQL_MODE;
-
 SET FOREIGN_KEY_CHECKS=@OLD_FOREIGN_KEY_CHECKS;
-
 SET UNIQUE_CHECKS=@OLD_UNIQUE_CHECKS;
